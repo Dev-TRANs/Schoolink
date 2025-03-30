@@ -1,0 +1,10 @@
+name = "schoolink"
+account_id = "e12983e7176ee97e22c5bbe5ff66e45d"
+compatibility_date = "2024-10-11"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "schoolink"
+database_id = "b7fc5abf-fa07-4632-8478-471093b8ddc5"
+preview_database_id = "DB"
