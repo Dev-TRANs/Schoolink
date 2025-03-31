@@ -7,6 +7,9 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
+//TODO: org, user: paramの反映（put/post）
+//TODO: user 権限回り未設定
+
 type Bindings = {
   DB: D1Database;
   SCRIPT_ID: string;
@@ -855,6 +858,14 @@ app.put('/projects/:project_id', async(c: any) => {
       );
     }
     await db.update(sessions).set({ lastActiveAt: Math.floor(Date.now() / 1000) }).where(eq(sessions.sessionUuid, sessionUuid)).execute()
+    const [project] = await db.select().from(projects).where(eq(projects.projectId, projectId))
+    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
+    if (membership.userUuid != session.userUuid) {
+      return c.json(
+        { isSuccessful: false, message: "forbidden" },
+        403,
+      )
+    }
     const file = formData.get('thumbnail')
     let thumbnail = null
     if(file){
@@ -1075,6 +1086,14 @@ app.put('/events/:event_id', async(c: any) => {
       );
     }
     await db.update(sessions).set({ lastActiveAt: Math.floor(Date.now() / 1000) }).where(eq(sessions.sessionUuid, sessionUuid)).execute()
+    const [event] = await db.select().from(events).where(eq(events.eventId, eventId))
+    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, event.membershipUuid))
+    if (membership.userUuid != session.userUuid) {
+      return c.json(
+        { isSuccessful: false, message: "forbidden" },
+        403,
+      )
+    }
     const file = formData.get('thumbnail')
     let thumbnail = null
     if(file){
@@ -1289,6 +1308,14 @@ app.put('/matchings/:matching_id', async(c: any) => {
       );
     }
     await db.update(sessions).set({ lastActiveAt: Math.floor(Date.now() / 1000) }).where(eq(sessions.sessionUuid, sessionUuid)).execute()
+    const [matching] = await db.select().from(matchings).where(eq(matchings.matchingId, matchingId))
+    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
+    if (membership.userUuid != session.userUuid) {
+      return c.json(
+        { isSuccessful: false, message: "forbidden" },
+        403,
+      )
+    }
     const file = formData.get('thumbnail')
     let thumbnail = null
     if(file){
