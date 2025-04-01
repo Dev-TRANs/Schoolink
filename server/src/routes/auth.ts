@@ -7,8 +7,6 @@ import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { checkOrgMembership } from '../middlewares/permission';
 
-//toLowerCase
-
 type Env = {
     Bindings: {
         DB: D1Database;
@@ -21,9 +19,9 @@ type Env = {
     }
 }
 
-const auth = new Hono<Env>();
+const app = new Hono<Env>();
 
-auth.post("/sign_in", zValidator('json', z.object({
+app.post("/sign_in", zValidator('json', z.object({
     userId: z.string(),
     hashedPassword: z.string(),
 })), async (c) => {
@@ -49,7 +47,7 @@ auth.post("/sign_in", zValidator('json', z.object({
     )
 })
 
-auth.post("/sign_out", zValidator('json', z.object({
+app.post("/sign_out", zValidator('json', z.object({
     sessionUuid: z.string(),
 })), async (c) => {
     const { sessionUuid } = c.req.valid('json')
@@ -60,9 +58,9 @@ auth.post("/sign_out", zValidator('json', z.object({
     )
 })
 
-auth.use("/create_account", checkOrgMembership("admin"))
+app.use("/create_account", checkOrgMembership("admin"))
 
-auth.post("/create_account", zValidator('json', z.object({
+app.post("/create_account", zValidator('json', z.object({
     newUserId: z.string(),
     organizationId: z.string(),
     hashedPassword: z.string(),
@@ -104,7 +102,7 @@ auth.post("/create_account", zValidator('json', z.object({
     );
 })
 
-auth.post("/change_password", zValidator('json', z.object({
+app.post("/change_password", zValidator('json', z.object({
     sessionUuid: z.string(),
     hashedCurrentPassword: z.string(),
     hashedNewPassword: z.string(),
@@ -125,4 +123,4 @@ auth.post("/change_password", zValidator('json', z.object({
     )
 })
 
-export default auth
+export default app
