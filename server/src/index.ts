@@ -2,6 +2,7 @@ import { Hono, Context } from 'hono';
 import routes from './routes';
 import { sessionChecker } from './middlewares/auth'
 import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "./db/schema"
+import { cors } from 'hono/cors'
 
 type Env = {
     Bindings: {
@@ -17,6 +18,14 @@ type Env = {
 
 const app = new Hono<Env>();
 
+app.use(
+    '*',
+    cors({
+        origin: ['http://localhost:5173', 'https://schoolink.stki.org'],
+    })
+)
+
+
 app.onError((e, c) => {
     console.error('Error:', e);
     return c.json(
@@ -25,7 +34,7 @@ app.onError((e, c) => {
     );
 });
 
-app.use("*", async(c: Context<Env>, next) => {
+app.use("*", async (c: Context<Env>, next) => {
     if (c.req.method == "GET") {
         return next()
     }
