@@ -43,7 +43,7 @@ app.post("/sign_in", zValidator('json', z.object({
     }
     await db.insert(sessions).values(session).execute();
     return c.json(
-        { success: true, userUuid: user.userUuid, sessionUuid: session.sessionUuid }
+        { success: true, userUuid: user.userUuid, sessionUuid: session.sessionUuid, userId: userId }
     )
 })
 

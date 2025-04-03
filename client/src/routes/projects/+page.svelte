@@ -1,5 +1,4 @@
 <script lang="ts">
-    //@ts-ignore
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     
@@ -7,7 +6,10 @@
         projectId: string;
         title: string
         description: string;
-        buttons: string;
+        buttons: Array<{
+            content: string;
+            url: string
+        }>;
         thumbnail: string;
         userId: string;
         userDisplayName: string;
@@ -16,6 +18,7 @@
         organizationDisplayName: string;
         organizationAvatar: string;
     };
+
 
     let projects = $state<projectType[]>([]);
 
@@ -34,29 +37,28 @@
         type="search"
     />
     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6">
-        <div>
+        <a href={`/projects/create`}>
             <div
                 class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200"
             >
                 ＋
             </div>
             <p class="text-xl w-full text-center mt-2">新規作成</p>
-        </div>
+        </a>
         {#each projects as project}
-        <div>
-            <img
-                class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200"
-                src={project.thumbnail}
-                alt="thumbnail"
-            />
-            <p class="text-xl w-full text-left mt-2 truncate">{project.title}</p>
-            <div class="flex">
-                <img src={project.userAvatar} alt="user avatar size-0.1" />
-                <p>{project.userDisplayName}</p>
-                <img src={project.organizationAvatar} alt="user avatar" />
-                <p>{project.userDisplayName}</p>
+        <a href={`/projects/${project.projectId}`}>
+            <div>
+                <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200" src={project.thumbnail} alt="thumbnail" />
+                <p class="text-xl w-full text-left mt-2 truncate">{project.title}</p>
+                <div class="flex items-center gap-1 mt-2">
+                    <img src={project.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full" />
+                    <p class="text-sm">{project.userDisplayName}</p>
+                    <p class="text-gray-500 text-sm">in</p>
+                    <img src={project.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md" />
+                    <p class="text-sm truncate">{project.organizationDisplayName}</p>
+                </div>
             </div>
-        </div>
+        </a>
         {/each}
     </div>
 </div>

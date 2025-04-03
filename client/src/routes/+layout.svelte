@@ -1,12 +1,44 @@
 <script lang="ts">
-	import '../app.css';
-	
+	import '../app.css'
+    import { PUBLIC_API_URL } from "$env/static/public";
+    import { onMount } from 'svelte';
+    import { afterNavigate } from '$app/navigation';
 	let { children } = $props();
+
+    type userType = {
+        userId: string;
+        displayName: string;
+        bio: string | null;
+        avatar: string;
+        instagramId: string | null;
+        threadsId: string | null;
+        twitterId: string | null;
+        organizationId: string;
+        organizationDisplayName: string;
+        organizationAvatar: string;
+        role: "admin" | "member";
+    };
+
+    let user = $state<userType>();
+
+    async function loadUser() {
+        const userId = localStorage.getItem("userId");
+        console.log(userId)
+        if (userId) {
+            const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
+            const data = await response.json();
+            user = data.data;
+        }
+    } 
+    onMount(loadUser);
+    afterNavigate(loadUser);
 </script>
 
 <header class="sm:hidden py-4 fixed top-0 w-full shadow-md z-10 backdrop-blur-xl bg-white/50">
     <div class="relative flex items-center justify-center">
-        <p class="text-3xl font-bold font-['Allerta_Stencil']">Schoolink</p>
+        <a href="/">
+            <p class="text-3xl font-bold font-AllertaStencil">Schoolink</p>
+        </a>
         <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">account_circle</span>
     </div>
 </header>
@@ -15,7 +47,9 @@
         
 <div class="grid grid-cols-1 sm:grid-cols-[16rem_auto] h-screen pt-16 sm:pt-0">
     <div class="w-full bg-gray-200 hidden sm:block">
-        <p class="text-3xl font-2xl font-bold pl-5 mt-5 font-['Allerta_Stencil']">Schoolink</p>
+        <a href="/">
+            <p class="text-3xl font-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink</p>
+        </a>
         <div class="text-lg mt-5 flex items-center mr-4 bg-gray-300 pl-5 py-2 rounded-r-xl">
             <span class="material-symbols-outlined mr-1 text-blue-600">public</span>
                 プロジェクト
@@ -32,6 +66,17 @@
     	    <span class="material-symbols-outlined mr-1 text-blue-600">account_circle</span>
             マイページ
         </div>
+        {#if user}
+        <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
+            <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full" />
+            <p class="text-sm">{user.displayName}</p>
+            <p class="text-gray-500 text-sm">in</p>
+        </div>
+        <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
+            <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md" />
+            <p class="text-sm truncate">{user.organizationDisplayName}</p>
+        </div>
+        {/if}
     </div>
     <div class="overflow-auto py-10 w-full">
         {@render children()}

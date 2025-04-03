@@ -101,9 +101,7 @@ app.put("/:organization_id/avatar", zValidator('form', z.object({
     const organization = c.get("organization")
     const db = drizzle(c.env.DB)
     const forwardFormData = new FormData();
-    if (avatar instanceof File) {
-        forwardFormData.append('file', avatar);
-    } else {
+    if (!(avatar instanceof File)) {
         return c.json(
             { success: false, message: "Avatar must be a file" },
             400
