@@ -3,6 +3,7 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { page } from '$app/state';
 	let { children } = $props();
 
     type userType = {
@@ -39,7 +40,9 @@
         <a href="/">
             <p class="text-3xl font-bold font-AllertaStencil">Schoolink</p>
         </a>
-        <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">account_circle</span>
+        <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
+            <a href="/mypage">account_circle</a>
+        </span>
     </div>
 </header>
 
@@ -50,22 +53,30 @@
         <a href="/">
             <p class="text-3xl font-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink</p>
         </a>
-        <div class="text-lg mt-5 flex items-center mr-4 bg-gray-300 pl-5 py-2 rounded-r-xl">
-            <span class="material-symbols-outlined mr-1 text-blue-600">public</span>
+        <a href="/projects">
+            <div class="text-lg mt-5 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/projects') ? 'bg-gray-300' : ''}">
+                <span class="material-symbols-outlined mr-1 text-blue-600">public</span>
                 プロジェクト
-        </div>
-        <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl">
-    	    <span class="material-symbols-outlined mr-1 text-blue-600">event</span>
-            イベント
-        </div>
-        <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl">
-    	    <span class="material-symbols-outlined mr-1 text-blue-600">diversity_3</span>
-            マッチング
-        </div>
-        <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl mt-auto">
-    	    <span class="material-symbols-outlined mr-1 text-blue-600">account_circle</span>
-            マイページ
-        </div>
+            </div>
+        </a>
+        <a href="/events">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/events') ? 'bg-gray-300' : ''}">
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">event</span>
+                イベント
+            </div>
+        </a>
+        <a href="/matchings">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/matchings') ? 'bg-gray-300' : ''}">
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">diversity_3</span>
+                マッチング
+            </div>
+        </a>
+        <a href="/mypage">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/mypage') ? 'bg-gray-300' : ''}">
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">account_circle</span>
+                マイページ
+            </div>
+        </a>
         {#if user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
             <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full" />
@@ -85,17 +96,23 @@
 
 <footer class="sm:hidden bg-gray-100/80 backdrop-blur-xl fixed bottom-0 w-full shadow-lg">
     <div class="grid grid-cols-3 w-full text-gray-600 font-bold">
-		<div class="text-xs flex flex-col items-center py-2 rounded-r-xl text-blue-600">
-			<span class="material-symbols-outlined text-blue-600 mb-1 !text-3xl">public</span>
-			プロジェクト
-		</div>
-		<div class="text-xs flex flex-col items-center py-2 rounded-r-xl">
-			<span class="material-symbols-outlined text-gray-600 mb-1 !text-3xl">event</span>
-			イベント
-		</div>
-		<div class="text-xs flex flex-col items-center py-2 rounded-r-xl">
-			<span class="material-symbols-outlined text-gray-600 mb-1 !text-3xl">diversity_3</span>
-			マッチング
-		</div>
+        <a href="/projects">
+		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/projects') ? 'text-blue-600' : ''}">
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/projects') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">public</span>
+			    プロジェクト
+		    </div>
+        </a>
+        <a href="/events">
+		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/events') ? 'text-blue-600' : ''}">
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/events') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">event</span>
+			    イベント
+		    </div>
+        </a>
+        <a href="/matchings">
+		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/matchings') ? 'text-blue-600' : ''}">
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/matchings') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">diversity_3</span>
+			    マッチング
+		    </div>
+        </a>
 	</div>
 </footer>
