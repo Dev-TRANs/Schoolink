@@ -24,7 +24,6 @@
 
     async function loadUser() {
         const userId = localStorage.getItem("userId");
-        console.log(userId)
         if (userId) {
             const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
             const data = await response.json();
