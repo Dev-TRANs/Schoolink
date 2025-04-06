@@ -53,10 +53,13 @@
                         sessionUuid,
                     })
                 })
+                user = undefined
             }
+        } else {
+            user = undefined
         }
     } 
-    
+
     onMount(loadUser);
     afterNavigate(loadUser);
 </script>
