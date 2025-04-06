@@ -23,11 +23,37 @@
     let user = $state<userType>();
 
     async function loadUser() {
+        const sessionUuid = localStorage.getItem("sessionUuid")
         const userId = localStorage.getItem("userId");
         if (userId) {
-            const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-            const data = await response.json();
-            user = data.data;
+            const sessionResponse = await fetch(`${PUBLIC_API_URL}/auth/session_check`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+            },
+                body: JSON.stringify({
+                    sessionUuid,
+                    userId
+                })
+            })
+            const sessionData = await sessionResponse.json();
+            if(sessionData.isValid) {
+                const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
+                const data = await response.json();
+                user = data.data;
+            } else {
+                localStorage.removeItem("sessionUuid")
+                localStorage.removeItem("userId")
+                const sessionResponse = await fetch(`${PUBLIC_API_URL}/auth/sign_out`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sessionUuid,
+                    })
+                })
+            }
         }
     } 
     onMount(loadUser);
@@ -78,12 +104,12 @@
         </a>
         {#if user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full" />
+            <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
             <p class="text-sm">{user.displayName}</p>
             <p class="text-gray-500 text-sm">in</p>
         </div>
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md" />
+            <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
             <p class="text-sm truncate">{user.organizationDisplayName}</p>
         </div>
         {/if}

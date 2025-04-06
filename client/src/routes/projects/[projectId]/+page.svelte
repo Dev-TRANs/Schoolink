@@ -41,13 +41,13 @@
         <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/projects">＜ プロジェクト</a>
         <h1 class="text-3xl font-bold text-cente mt-8">{project.title}</h1>
         <div class="flex items-center gap-1 mt-2">
-            <img src={project.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full" />
+            <img src={project.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
             <p class="text-sm">{project.userDisplayName}</p>
             <p class="text-gray-500 text-sm">in</p>
-            <img src={project.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md" />
+            <img src={project.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
             <p class="text-sm truncate">{project.organizationDisplayName}</p>
         </div>
-        <img src={project.thumbnail} class="rounded-2xl mt-5 w-full" alt="thumbnail"/>
+        <img src={project.thumbnail} class="rounded-2xl mt-5 w-full aspect-4/3" alt="thumbnail"/>
         <div class="w-full bg-slate-300 mt-8 rounded-2xl p-5 whitespace-pre-line">
             {project.description}
         </div>

@@ -123,4 +123,17 @@ app.post("/change_password", zValidator('json', z.object({
     )
 })
 
+app.post("/session_check",  zValidator('json', z.object({
+    sessionUuid: z.string(),
+    userId: z.string(),
+})), async (c) => {
+    const { userId } = c.req.valid("json")
+    const db = drizzle(c.env.DB)
+    const session = c.get("session")
+    const [ user ] = await db.select().from(users).where(eq(users.userUuid, session.userUuid)).execute()
+    return c.json({
+        success: true, isValid: (session.isValid && user.userId === userId)
+    })
+})
+
 export default app

@@ -40,9 +40,9 @@
     
     // フォーム送信用にJSON文字列に変換
     $: jsonValue = JSON.stringify(value);
-  </script>
+</script>
   
-  <div class="space-y-4 {className}">
+<div class="space-y-4 {className}">
     {#if label}
       <label for={id} class="block text-sm font-medium text-gray-700">{label}</label>
     {/if}
@@ -111,11 +111,10 @@
     
     <!-- フォーム送信用の入力フィールド - nameを明示的に含め、FormDataから確実に取得できるようにする -->
     <input 
-      type="text" 
+      type="hidden" 
       {name} 
       {id} 
       value={jsonValue} 
-      style="display: none;"
     />
     
     {#if showError && error}

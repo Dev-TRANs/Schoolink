@@ -21,6 +21,7 @@
   let isUploading = false;
   let currentBlob = null; // 現在の処理済みBlobを保持
   let fileName = "image.png"; // アップロードするファイル名
+  let hiddenInput; // Form送信用の隠しinput要素への参照
   
   // コンポーネント初期化時に値がある場合はプレビューを設定
   $: {
@@ -30,17 +31,38 @@
   }
   
   // バインディングのために双方向データフローを設定
-  function updateValue(newPreviewUrl) {
+  function updateValue(newPreviewUrl, blob) {
     value = newPreviewUrl;
-    // dispatchEvent を使用してカスタムイベントを発火
-    const event = new CustomEvent('change', { 
+    
+    // このイベントがフォームに伝わるように特別なカスタムイベントを発行
+    const event = new CustomEvent('imgfieldchange', { 
+      bubbles: true, // 親要素に伝播させる
       detail: { 
+        fieldName: name,
         value: newPreviewUrl, 
-        blob: currentBlob,
+        blob: blob,
         fileName: fileName
       } 
     });
-    if (fileInput) fileInput.dispatchEvent(event);
+    fileInput.dispatchEvent(event);
+    
+    // Blobをフォームデータとして使えるようにする特殊処理
+    if (hiddenInput && blob) {
+      // FormDataでアクセスできるようにFile形式に変換
+      const processedFile = new File([blob], fileName, { type: 'image/png' });
+      
+      // データ転送オブジェクトを作成（ファイルをドラッグ＆ドロップしたように）
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(processedFile);
+      
+      // 隠しinputのfilesプロパティを更新
+      hiddenInput.files = dataTransfer.files;
+      
+      // 変更イベントを発火させてフォームにファイルの変更を通知
+      const changeEvent = new Event('change', { bubbles: true });
+      hiddenInput.dispatchEvent(changeEvent);
+      
+    }
   }
   
   // 外部から現在のBlobを取得できるようにするメソッド
@@ -76,22 +98,44 @@
         const srcHeight = img.height;
         let cropWidth, cropHeight;
         
-        if (srcWidth / srcHeight > aspectRatio) {
+        // アスペクト比に基づいて切り抜く領域を計算
+        const targetAspectRatio = aspectRatio;
+        const sourceAspectRatio = srcWidth / srcHeight;
+        
+        let startX = 0;
+        let startY = 0;
+        
+        if (sourceAspectRatio > targetAspectRatio) {
+          // 画像が目標より横長の場合は幅を切る
           cropHeight = srcHeight;
-          cropWidth = cropHeight * aspectRatio;
+          cropWidth = srcHeight * targetAspectRatio;
+          startX = (srcWidth - cropWidth) / 2;
         } else {
+          // 画像が目標より縦長の場合は高さを切る
           cropWidth = srcWidth;
-          cropHeight = cropWidth / aspectRatio;
+          cropHeight = srcWidth / targetAspectRatio;
+          startY = (srcHeight - cropHeight) / 2;
         }
         
-        const startX = (srcWidth - cropWidth) / 2;
-        const startY = (srcHeight - cropHeight) / 2;
-        
+        // キャンバスサイズを適切に設定
         const canvas = document.createElement('canvas');
         canvas.width = cropWidth;
         canvas.height = cropHeight;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, startX, startY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+        
+        
+        // 画像を描画（トリミング処理）
+        ctx.drawImage(
+          img,           // ソース画像
+          startX,        // ソースX位置
+          startY,        // ソースY位置
+          cropWidth,     // ソース幅
+          cropHeight,    // ソース高さ
+          0,             // 描画先X位置
+          0,             // 描画先Y位置
+          cropWidth,     // 描画先幅
+          cropHeight     // 描画先高さ
+        );
         
         // プレビュー用にDataURLを作成
         const newPreview = canvas.toDataURL('image/png');
@@ -99,8 +143,11 @@
         
         // Blobとして保存
         canvas.toBlob((blob) => {
+          // 新しいBlobを保持
           currentBlob = blob;
-          updateValue(newPreview);
+          
+          // トリミングされたBlobでvalueを更新し、フォーム要素も更新
+          updateValue(newPreview, blob);
           
           // 自動アップロードが有効で、URLが指定されている場合
           if (autoUpload && uploadUrl) {
@@ -170,7 +217,7 @@
   
   <div class="relative {containerClassName}" style="aspect-ratio: {aspectRatio};">
     <img 
-      src={preview} 
+      src={preview || src} 
       class="w-full h-full object-cover border {showError && error ? 'border-red-500' : 'border-gray-300'} shadow-sm" 
       alt="Preview"
     >
@@ -190,15 +237,25 @@
         {/if}
       </button>
     {/if}
+    
+    <!-- 非表示の処理用input -->
     <input 
       type="file" 
       {id}
-      {name}
-      {disabled}
       bind:this={fileInput} 
       accept="image/*" 
       class="hidden" 
       on:change={handleFileUpload}
+    >
+    
+    <!-- フォーム送信用の隠しinput - これがFormDataに含まれる -->
+    <input 
+      type="file" 
+      name={name}
+      {disabled}
+      bind:this={hiddenInput} 
+      accept="image/*" 
+      class="hidden" 
     >
   </div>
   
