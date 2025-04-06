@@ -56,6 +56,7 @@
             }
         }
     } 
+    
     onMount(loadUser);
     afterNavigate(loadUser);
 </script>
