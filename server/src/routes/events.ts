@@ -37,9 +37,9 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        eventsBaseObject = await db.select().from(events).where(eq(events.membershipUuid, membership.membershipUuid))
+        eventsBaseObject = await db.select().from(events).where(and(eq(events.membershipUuid, membership.membershipUuid), eq(events.isValid, 1)))
     } else {
-        eventsBaseObject = await db.select().from(events)
+        eventsBaseObject = await db.select().from(events).where(eq(events.isValid, 1))
     }
     const eventsObject = await Promise.all(eventsBaseObject.map(async (event) => {
         const [eventMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, event.membershipUuid))
@@ -53,6 +53,9 @@ app.get("/", zValidator('query', z.object({
             description: event.description,
             buttons: event.buttons,
             thumbnail: event.thumbnail,
+            place: event.place,
+            startAt: event.startAt,
+            endAt: event.endAt,
             userId: eventUser.userId,
             userDisplayName: userProfile.displayName,
             userAvatar: userProfile.avatar,
@@ -88,6 +91,9 @@ app.get('/:event_id', async (c) => {
         description: event.description,
         buttons: event.buttons,
         thumbnail: event.thumbnail,
+        place: event.place,
+        startAt: event.startAt,
+        endAt: event.endAt,
         userId: user.userId,
         userDisplayName: userProfile.displayName,
         userAvatar: userProfile.avatar,
@@ -230,7 +236,7 @@ app.put('/:event_id', zValidator('form', z.object({
     const newDetail = {
         title: title,
         description: description,
-        buttons: buttons,
+        buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
         thumbnail: url,
         startAt: startAt && Number(startAt),
         endAt: endAt && Number(endAt),
@@ -241,6 +247,26 @@ app.put('/:event_id', zValidator('form', z.object({
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
     db.update(events).set(updatedDetail).where(eq(events.eventId, eventId)).execute()
+    return c.json(
+        { success: true }
+    )
+})
+
+app.put('/:event_id/is_valid', zValidator('json', z.object({
+    sessionUuid: z.string(),
+})), async(c) => {
+    const db = drizzle(c.env.DB)
+    const eventId = c.req.param("event_id")
+    const session = c.get("session")
+    const [event] = await db.select().from(events).where(eq(events.eventId, eventId))
+    const [eventMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, event.membershipUuid))
+    if (eventMembership.userUuid != session.userUuid) {
+        return c.json(
+            { success: false, message: "Forbidden" },
+            403,
+        )
+    }
+    db.update(events).set({isValid: (event.isValid ? 0 : 1)}).where(eq(events.eventId, eventId)).execute()
     return c.json(
         { success: true }
     )

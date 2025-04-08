@@ -3,3 +3,11 @@
 @theme {
   --font-AllertaStencil: "Allerta Stencil", sans-serif; 
 }
+
+.button-violet {
+  @apply bg-transparent text-violet-800 hover:bg-violet-800 hover:text-white transition border border-violet-800 rounded px-5 py-2 text-xl block text-center
+}
+
+.button-red {
+  @apply bg-transparent text-red-800 hover:bg-red-800 hover:text-white transition border border-red-800 rounded px-5 py-2 text-xl block text-center
+}

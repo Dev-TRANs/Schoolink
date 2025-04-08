@@ -67,7 +67,7 @@
 <header class="sm:hidden py-4 fixed top-0 w-full shadow-md z-10 backdrop-blur-xl bg-white/50">
     <div class="relative flex items-center justify-center">
         <a href="/">
-            <p class="text-3xl font-bold font-AllertaStencil">Schoolink</p>
+            <p class="text-3xl font-bold font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
         <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
             <a href="/mypage">account_circle</a>
@@ -80,7 +80,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-[16rem_auto] h-screen pt-16 sm:pt-0">
     <div class="w-full bg-gray-200 hidden sm:block">
         <a href="/">
-            <p class="text-3xl font-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink</p>
+            <p class="text-3xl text-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
         <a href="/projects">
             <div class="text-lg mt-5 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/projects') ? 'bg-gray-300' : ''}">
@@ -108,13 +108,21 @@
         </a>
         {#if user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-            <p class="text-sm">{user.displayName}</p>
+            <a href="/users/{user.userId}">
+                <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+            </a>
+            <a href="/users/{user.userId}">
+                <p class="text-sm hover:underline">{user.displayName}</p>
+            </a>
             <p class="text-gray-500 text-sm">in</p>
         </div>
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-            <p class="text-sm truncate">{user.organizationDisplayName}</p>
+            <a href="/organizations/{user.organizationId}">
+                <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+            </a>
+            <a href="/organizations/{user.organizationId}">
+                <p class="text-sm truncate hover:underline">{user.organizationDisplayName}</p>
+            </a>
         </div>
         {/if}
     </div>

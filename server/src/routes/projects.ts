@@ -37,9 +37,9 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        projectsBaseObject = await db.select().from(projects).where(eq(projects.membershipUuid, membership.membershipUuid))
+        projectsBaseObject = await db.select().from(projects).where(and(eq(projects.membershipUuid, membership.membershipUuid), eq(projects.isValid, 1)))
     } else {
-        projectsBaseObject = await db.select().from(projects)
+        projectsBaseObject = await db.select().from(projects).where(eq(projects.isValid, 1))
     }
     const projectsObject = await Promise.all(projectsBaseObject.map(async (project) => {
         const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
@@ -218,7 +218,7 @@ app.put('/:project_id', zValidator('form', z.object({
     const newDetail = {
         title: title,
         description: description,
-        buttons: buttons,
+        buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
         thumbnail: url,
         updatedAt: Math.floor(Date.now() / 1000)
     }
@@ -226,6 +226,26 @@ app.put('/:project_id', zValidator('form', z.object({
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
     db.update(projects).set(updatedDetail).where(eq(projects.projectId, projectId)).execute()
+    return c.json(
+        { success: true }
+    )
+})
+
+app.put('/:project_id/is_valid', zValidator('json', z.object({
+    sessionUuid: z.string(),
+})), async(c) => {
+    const db = drizzle(c.env.DB)
+    const projectId = c.req.param("project_id")
+    const session = c.get("session")
+    const [project] = await db.select().from(projects).where(eq(projects.projectId, projectId))
+    const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
+    if (projectMembership.userUuid != session.userUuid) {
+        return c.json(
+            { success: false, message: "Forbidden" },
+            403,
+        )
+    }
+    db.update(projects).set({isValid: (project.isValid ? 0 : 1)}).where(eq(projects.projectId, projectId)).execute()
     return c.json(
         { success: true }
     )

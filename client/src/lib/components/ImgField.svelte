@@ -163,11 +163,14 @@
     if (!uploadUrl) return Promise.reject("Upload URL not specified");
     if (!blob) return Promise.reject("No image blob to upload");
     
+    const sessionUuid = localStorage.getItem("sessionUuid")
+    
     isUploading = true;
     
     // FormDataを使用してBlobをアップロード
     const formData = new FormData();
     formData.append(formDataName, blob, fileName);
+    formData.append("sessionUuid", sessionUuid)
     
     return fetch(uploadUrl, {
       method: 'POST',

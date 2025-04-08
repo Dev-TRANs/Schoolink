@@ -15,6 +15,13 @@
       "when": 1743362962350,
       "tag": "0001_smooth_newton_destine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1743950668835,
+      "tag": "0002_wise_dazzler",
+      "breakpoints": true
     }
   ]
 }

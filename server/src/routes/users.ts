@@ -94,12 +94,12 @@ app.use("/:user_id/id", checkUserSession)
 
 app.put("/:user_id/id", zValidator('json', z.object({
     sessionUuid: z.string(),
-    newUsernId: z.string()
+    newUserId: z.string()
 })), async (c) => {
-    const { newUsernId } = c.req.valid("json")
+    const { newUserId } = c.req.valid("json")
     const session = c.get("session")
     const db = drizzle(c.env.DB)
-    db.update(users).set({ userId: newUsernId.toLowerCase() }).where(eq(users.userUuid, session.userUuid)).execute()
+    db.update(users).set({ userId: newUserId.toLowerCase() }).where(eq(users.userUuid, session.userUuid)).execute()
     return c.json(
         { success: true }
     )

@@ -32,6 +32,22 @@ app.get("/:organization_id", async (c) => {
         );
     }
     const [profile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
+    const organizationMemberships = await db.select().from(memberships).where(eq(memberships.organizationUuid, organization.organizationUuid))
+    const organizationUsers = await Promise.all(organizationMemberships.map(async(organizationMembership) => {
+        const [user] = await db.select().from(users).where(eq(users.userUuid, organizationMembership.userUuid)).execute()
+        const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, organizationMembership.userUuid)).execute()
+        const userData = {
+            userId: user.userId,
+            displayName: userProfile.displayName,
+            bio: userProfile.bio,
+            avatar: userProfile.avatar,
+            instagramId: userProfile.instagramId,
+            threadsId: userProfile.threadsId,
+            twitterId: userProfile.twitterId,
+            role: organizationMembership.role
+        }
+        return userData
+    }))
     const data = {
         organizationId: organization.organizationId,
         displayName: profile.displayName,
@@ -39,7 +55,8 @@ app.get("/:organization_id", async (c) => {
         avatar: profile.avatar,
         instagramId: profile.instagramId,
         threadsId: profile.threadsId,
-        twitterId: profile.twitterId
+        twitterId: profile.twitterId,
+        users: organizationUsers
     }
     return c.json(
         { success: true, data: data }

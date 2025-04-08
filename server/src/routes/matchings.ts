@@ -37,9 +37,9 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        matchingsBaseObject = await db.select().from(matchings).where(eq(matchings.membershipUuid, membership.membershipUuid))
+        matchingsBaseObject = await db.select().from(matchings).where(and(eq(matchings.membershipUuid, membership.membershipUuid), eq(matchings.isValid, 1)))
     } else {
-        matchingsBaseObject = await db.select().from(matchings)
+        matchingsBaseObject = await db.select().from(matchings).where(eq(matchings.isValid, 1))
     }
     const matchingsObject = await Promise.all(matchingsBaseObject.map(async (matching) => {
         const [matchingMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
@@ -218,7 +218,7 @@ app.put('/:matching_id', zValidator('form', z.object({
     const newDetail = {
         title: title,
         description: description,
-        buttons: buttons,
+        buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
         thumbnail: url,
         updatedAt: Math.floor(Date.now() / 1000)
     }
@@ -226,6 +226,26 @@ app.put('/:matching_id', zValidator('form', z.object({
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
     db.update(matchings).set(updatedDetail).where(eq(matchings.matchingId, matchingId)).execute()
+    return c.json(
+        { success: true }
+    )
+})
+
+app.put('/:matching_id/is_valid', zValidator('json', z.object({
+    sessionUuid: z.string(),
+})), async(c) => {
+    const db = drizzle(c.env.DB)
+    const matchingId = c.req.param("matching_id")
+    const session = c.get("session")
+    const [matching] = await db.select().from(matchings).where(eq(matchings.matchingId, matchingId))
+    const [matchingMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
+    if (matchingMembership.userUuid != session.userUuid) {
+        return c.json(
+            { success: false, message: "Forbidden" },
+            403,
+        )
+    }
+    db.update(matchings).set({isValid: (matching.isValid ? 0 : 1)}).where(eq(matchings.matchingId, matchingId)).execute()
     return c.json(
         { success: true }
     )
