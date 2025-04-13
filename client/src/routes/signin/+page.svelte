@@ -42,7 +42,7 @@
         if (result.success === true) {
           localStorage.setItem('sessionUuid', result.sessionUuid);
           localStorage.setItem('userId', result.userId);
-          goto('/mypage');
+          goto('/settings');
         } else {
           errorMessage = result.message || 'ログインに失敗しました。';
         }
@@ -57,7 +57,7 @@
     onMount(async () => {
         const sessionUuid = localStorage.getItem("sessionUuid")
         if(sessionUuid){
-            goto('/mypage')
+            goto('/settings')
         }
     });
 </script>
