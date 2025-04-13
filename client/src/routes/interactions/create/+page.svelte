@@ -1,45 +1,11 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import FormInputField from "../../../../lib/components/FormInputField.svelte";
-    import ImgField from "../../../../lib/components/ImgField.svelte";
-    import ButtonField from "../../../../lib/components/ButtonField.svelte";
+    import FormInputField from "../../../lib/components/FormInputField.svelte";
+    import ImgField from "../../../lib/components/ImgField.svelte";
+    import ButtonField from "../../../lib/components/ButtonField.svelte";
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     
-    type matchingType = {
-        matchingId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
-
-    const matchingId = $page.params.matchingId;
-
-    let matching;
-
-    let userId;
-
-    onMount(async () => {
-        userId = localStorage.getItem("userId")
-        const response = await fetch(`${PUBLIC_API_URL}/matchings/${matchingId}`);
-        const matchingData = await response.json();
-        if(!matchingData){
-            goto("/")   
-        }
-        matching = matchingData.data
-        if(matching.userId !== userId){
-            goto('/matchings/' + matching.matchingId)
-        }
-    });
-
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
@@ -62,14 +28,14 @@
           data.delete("thumbnail");
         }
         
-        const response = await fetch(`${PUBLIC_API_URL}/matchings/${matching.matchingId}`, {
-          method: 'put',
+        const response = await fetch(`${PUBLIC_API_URL}/interactions`, {
+          method: 'POST',
           body: data
         });
         
         const result = await response.json();
         if (result.success === true) {
-          goto('/matchings/' + matching.matchingId);
+          goto('/interactions/' + result.interactionId);
         } else {
           errorMessage = result.message || '送信に失敗しました。';
         }
@@ -94,10 +60,9 @@
     });
   </script>
   
-  {#if matching}
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
-    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/matchings/{matching.matchingId}">＜ 閲覧画面</a>
-    <h1 class="text-3xl font-bold text-cente mt-8">{matching.title}</h1>
+    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/interactions">＜ 交流会</a>
+    <h1 class="text-3xl font-bold text-cente mt-8">新規作成</h1>
     <form on:submit|preventDefault={handleSubmit} class="mt-5 w-full" bind:this={formElement}>
       <ImgField
         className="mb-5"
@@ -105,7 +70,7 @@
         id="thumbnail"
         name="thumbnail"
         label="サムネイル"
-        src={matching.thumbnail}
+        src="/img/default/thumbnail.png"
         disabled={loading}
         aspectRatio={4/3}
       />
@@ -115,7 +80,6 @@
         name="title"
         label="タイトル"
         error="タイトルを入力してください"
-        value={matching.title}
         showError={formSubmitted && !data?.get("title")}
         disabled={loading}
       />
@@ -124,7 +88,6 @@
         id="description"
         name="description"
         label="説明"
-        value={matching.description}
         disabled={loading}
         multiline={true}
         rows={5}
@@ -134,7 +97,6 @@
         id="buttons"
         name="buttons"
         label="ボタン"
-        value={matching.buttons}
         disabled={loading}
       />
       {#if errorMessage}
@@ -151,4 +113,3 @@
       </button>
     </form>
   </div>
-  {/if}

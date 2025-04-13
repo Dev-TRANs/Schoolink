@@ -49,8 +49,8 @@
         organizationAvatar: string;
     };
 
-    type matchingType = {
-        matchingId: string;
+    type interactionType = {
+        interactionId: string;
         title: string
         description: string;
         buttons: Array<{ content: string, url: string }>;
@@ -71,7 +71,7 @@
 
     let events = $state<eventType[]>([])
 
-    let matchings = $state<matchingType[]>([])
+    let interactions = $state<interactionType[]>([])
 
     onMount(async() => {
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -83,9 +83,9 @@
         const eventResponce = await fetch(`${PUBLIC_API_URL}/events?userId=${userId}`);
         const eventData = await eventResponce.json();
         events = eventData.data;
-        const matchingResponce = await fetch(`${PUBLIC_API_URL}/matchings?userId=${userId}`);
-        const matchingData = await matchingResponce.json();
-        matchings = matchingData.data;
+        const interactionResponce = await fetch(`${PUBLIC_API_URL}/interactions?userId=${userId}`);
+        const interactionData = await interactionResponce.json();
+        interactions = interactionData.data;
     })
 </script>
 
@@ -162,25 +162,25 @@
         </div>
     </div>
     <div class="w-full mt-5">
-        <p class="w-full text-center text-2xl font-bold">マッチング</p>
+        <p class="w-full text-center text-2xl font-bold">交流会</p>
         <div class="flex mt-3 overflow-x-scroll gap-6 justify-center w-full">
-        {#each matchings as matching}
-         <a href={`/projects/${matching.matchingId}`}>
+        {#each interactions as interaction}
+         <a href={`/projects/${interaction.interactionId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm" src={matching.thumbnail} alt="thumbnail" />
-             <p class="text-xl w-full text-left mt-2 truncate">{matching.title}</p>
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm" src={interaction.thumbnail} alt="thumbnail" />
+             <p class="text-xl w-full text-left mt-2 truncate">{interaction.title}</p>
              <div class="flex items-center gap-1 mt-2">
-               <img src={matching.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-               <p class="text-sm">{matching.userDisplayName}</p>
+               <img src={interaction.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+               <p class="text-sm">{interaction.userDisplayName}</p>
                <p class="text-gray-500 text-sm">in</p>
-               <img src={matching.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-               <p class="text-sm truncate">{matching.organizationDisplayName}</p>
+               <img src={interaction.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+               <p class="text-sm truncate">{interaction.organizationDisplayName}</p>
              </div>
            </div>
          </a>
         {/each}
-        {#if matchings.length === 0}
-        <p class="text-gray-500 text-lg">マッチングがありません</p>
+        {#if interactions.length === 0}
+        <p class="text-gray-500 text-lg">交流会がありません</p>
         {/if}
         </div>
     </div>

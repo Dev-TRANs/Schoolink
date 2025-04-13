@@ -14,7 +14,6 @@
   export let autoUpload = false; // trueの場合、画像選択後に即時アップロード
   export let onUploadSuccess = null; // アップロード成功時のコールバック
   export let onUploadError = null; // アップロード失敗時のコールバック
-  export let formDataName = "image"; // FormDataに追加する際のキー名
   
   let fileInput;
   let preview = src;
@@ -169,7 +168,7 @@
     
     // FormDataを使用してBlobをアップロード
     const formData = new FormData();
-    formData.append(formDataName, blob, fileName);
+    formData.append(name, blob, fileName);
     formData.append("sessionUuid", sessionUuid)
     
     return fetch(uploadUrl, {

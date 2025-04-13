@@ -75,20 +75,20 @@
     </div>
     <div class="w-full mt-5">
         <p class="w-full text-center text-3xl font-bold">ユーザー設定</p>
-        <a href="/mypage/user/account">
+        <a href="/settings/user/account">
             <p class="w-full text-center mt-3 text-2xl hover:underline">アカウント設定</p>
         </a>
-        <a href="/mypage/user/profile">
+        <a href="/settings/user/profile">
             <p class="w-full text-center mt-3 text-2xl hover:underline">プロフィール設定</p>
         </a>
     </div>
     {#if user.role === "admin"}
     <div class="w-full mt-5">
         <p class="w-full text-center text-3xl font-bold">組織設定</p>
-        <a href="/mypage/organization/users">
+        <a href="/settings/organization/users">
             <p class="w-full text-center mt-3 text-2xl hover:underline">ユーザー登録設定</p>
         </a>
-        <a href="/mypage/organization/profile">
+        <a href="/settings/organization/profile">
             <p class="w-full text-center mt-3 text-2xl hover:underline">プロフィール設定</p>
         </a>
     </div>

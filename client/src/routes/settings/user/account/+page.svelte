@@ -97,15 +97,14 @@
     onMount(async () => {
         sessionUuid = localStorage.getItem("sessionUuid")
         if(!sessionUuid){
-            goto('/')
+            goto('/signin')
         }
-        userId = localStorage.getItem("userId")
     });
 
 </script>
 
 <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
-    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/mypage">＜ マイページ</a>
+    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/settings">＜ 設定</a>
     <p class="w-full text-center text-3xl font-bold mt-5">ユーザー設定/アカウント設定</p>
     <p class="w-full text-center text-2xl underline mt-5">パスワード変更</p>
     <form on:submit|preventDefault={handlePasswordFormSubmit} class="space-y-4 mt-3">

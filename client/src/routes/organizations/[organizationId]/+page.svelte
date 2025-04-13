@@ -46,7 +46,7 @@
         <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square" src={organization.avatar} alt="avatar" />
         <div class="col-span-2 flex flex-col justify-center">
             <p class="text-3xl font-bold">{organization.displayName}</p>
-            <p class="ml-1 text-xl text-gray-500">@{organization.organizationId}</p>
+            <p class="ml-1 text-xl text-gray-500">ID: {organization.organizationId}</p>
             <div class="flex items-center gap-1">
                 {#if organization.twitterId || organization.instagramId || organization.threadsId}
                 <p class="text-gray-500">SNS:</p>
@@ -69,8 +69,8 @@
     <p class="w-full text-center text-2xl font-bold mt-5">ユーザー</p>
     {#each organization.users as user}
     <a href="/users/{user.userId}">
-        <div class="grid grid-cols-5 gap-10">
-            <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square" src={user.avatar} alt="avatar" />
+        <div class="grid grid-cols-5 gap-10 mt-5">
+            <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square my-auto" src={user.avatar} alt="avatar" />
             <div class="col-span-4 text-2xl font-bold flex items-center gap-1">
                 {#if user.role === "admin"}
                 <p class="material-symbols-outlined">

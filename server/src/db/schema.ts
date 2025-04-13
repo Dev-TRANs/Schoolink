@@ -118,10 +118,10 @@ export const events = sqliteTable('events',
 	]
 );
 
-export const matchings = sqliteTable('matchings', 
+export const interactions = sqliteTable('interactions', 
 	{
-		matchingUuid: text('matching_uuid').primaryKey(),
-		matchingId: text('matching_id').unique().notNull(),
+		interactionUuid: text('interaction_uuid').primaryKey(),
+		interactionId: text('interaction_id').unique().notNull(),
 		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
 		title: text('title').notNull(),
 		description: text('description'),
@@ -132,6 +132,6 @@ export const matchings = sqliteTable('matchings',
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
 	(table) => [
-		index("idx_matchings_membership_uuid").on(table.membershipUuid),
+		index("idx_interactions_membership_uuid").on(table.membershipUuid),
 	]
 );

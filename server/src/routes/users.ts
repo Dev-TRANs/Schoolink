@@ -107,7 +107,7 @@ app.put("/:user_id/id", zValidator('json', z.object({
 
 app.use("/:user_id", checkUserSession)
 
-app.put("/:user_id", zValidator('json', z.object({
+app.put("/:user_id", zValidator('form', z.object({
     sessionUuid: z.string(),
     displayName: z.string(),
     bio: z.string(),
@@ -115,7 +115,7 @@ app.put("/:user_id", zValidator('json', z.object({
     threadsId: z.string(),
     twitterId: z.string()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid("json")
+    const { displayName, bio, instagramId, threadsId, twitterId } = await c.req.parseBody();
     const session = c.get("session")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -137,7 +137,7 @@ app.put("/:user_id", zValidator('json', z.object({
 
 app.use("/:user_id/avatar", checkUserSession)
 
-app.put("/:user_id/avatar", zValidator('form', z.object({
+app.post("/:user_id/avatar", zValidator('form', z.object({
     sessionUuid: z.string(),
     avatar: z.instanceof(File)
 })), async (c) => {

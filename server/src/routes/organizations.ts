@@ -65,7 +65,7 @@ app.get("/:organization_id", async (c) => {
 
 app.use("/:organization_id", checkOrgMembership("admin"))
 
-app.put("/:organization_id", zValidator('json', z.object({
+app.put("/:organization_id", zValidator('form', z.object({
     sessionUuid: z.string(),
     displayName: z.string(),
     bio: z.string(),
@@ -73,7 +73,7 @@ app.put("/:organization_id", zValidator('json', z.object({
     threadsId: z.string(),
     twitterId: z.string()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid("json")
+    const { displayName, bio, instagramId, threadsId, twitterId } = await c.req.parseBody();
     const organization = c.get("organization")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -110,7 +110,7 @@ app.put("/:organization_id/id", zValidator('json', z.object({
 
 app.use("/:organization_id/avatar", checkOrgMembership("admin"))
 
-app.put("/:organization_id/avatar", zValidator('form', z.object({
+app.post("/:organization_id/avatar", zValidator('form', z.object({
     sessionUuid: z.string(),
     avatar: z.instanceof(File)
 })), async (c) => {

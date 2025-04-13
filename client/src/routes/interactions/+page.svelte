@@ -3,8 +3,8 @@
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
    
-    type matchingType = {
-     matchingId: string;
+    type interactionType = {
+     interactionId: string;
      title: string
      description: string;
      buttons: Array<{
@@ -20,19 +20,19 @@
      organizationAvatar: string;
     };
    
-    let matchings = $state<matchingType[]>([]);
-    let filteredMatchings = $state<matchingType[]>([]);
+    let interactions = $state<interactionType[]>([]);
+    let filteredInteractions = $state<interactionType[]>([]);
     let searchQuery = $state<string>('');
-    let fuse: Fuse<matchingType>;
+    let fuse: Fuse<interactionType>;
    
     onMount(async () => {
-     const response = await fetch(`${PUBLIC_API_URL}/matchings`);
+     const response = await fetch(`${PUBLIC_API_URL}/interactions`);
      const data = await response.json();
-     matchings = data.data;
-     filteredMatchings = matchings;
+     interactions = data.data;
+     filteredInteractions = interactions;
      
      // Fuse.jsの設定
-     fuse = new Fuse(matchings, {
+     fuse = new Fuse(interactions, {
        keys: ['title', 'description', 'userDisplayName', 'organizationDisplayName'],
        threshold: 0.4,
        ignoreLocation: true
@@ -45,29 +45,29 @@
      searchQuery = target.value;
      
      if (searchQuery.trim() === '') {
-       filteredMatchings = matchings;
+       filteredInteractions = interactions;
      } else {
        const results = fuse.search(searchQuery);
-       filteredMatchings = results.map(result => result.item);
+       filteredInteractions = results.map(result => result.item);
      }
     }
    </script>
    
    <div class="mx-5">
-     <h1 class="text-4xl font-bold">マッチング</h1>
+     <h1 class="text-4xl font-bold">交流会</h1>
      <input
        class="bg-gray-200 h-10 w-full mt-4 rounded-xl p-4"
-       placeholder="マッチングを検索…"
+       placeholder="交流会を検索…"
        type="search"
        value={searchQuery}
        oninput={handleSearch}
      />
-     {#if searchQuery && filteredMatchings.length === 0}
+     {#if searchQuery && filteredInteractions.length === 0}
      <p class="text-center text-2xl w-full mt-5">「{searchQuery}」の検索結果はありません</p>
      {/if}
      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6">
        {#if !searchQuery}
-       <a href={`/matchings/create`}>
+       <a href={`/interactions/create`}>
          <div
            class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200"
          >
@@ -77,17 +77,17 @@
        </a>
        {/if}
        
-       {#each filteredMatchings as matching}
-         <a href={`/matchings/${matching.matchingId}`}>
+       {#each filteredInteractions as interaction}
+         <a href={`/interactions/${interaction.interactionId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3" src={matching.thumbnail} alt="thumbnail" />
-             <p class="text-xl w-full text-left mt-2 truncate">{matching.title}</p>
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3" src={interaction.thumbnail} alt="thumbnail" />
+             <p class="text-xl w-full text-left mt-2 truncate">{interaction.title}</p>
              <div class="flex items-center gap-1 mt-2">
-               <img src={matching.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-               <p class="text-sm">{matching.userDisplayName}</p>
+               <img src={interaction.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+               <p class="text-sm">{interaction.userDisplayName}</p>
                <p class="text-gray-500 text-sm">in</p>
-               <img src={matching.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-               <p class="text-sm truncate">{matching.organizationDisplayName}</p>
+               <img src={interaction.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+               <p class="text-sm truncate">{interaction.organizationDisplayName}</p>
              </div>
            </div>
          </a>

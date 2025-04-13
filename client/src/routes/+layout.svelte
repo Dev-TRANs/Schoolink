@@ -70,7 +70,7 @@
             <p class="text-3xl font-bold font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
         <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
-            <a href="/mypage">account_circle</a>
+            <a href="/settings">settings</a>
         </span>
     </div>
 </header>
@@ -94,16 +94,16 @@
                 イベント
             </div>
         </a>
-        <a href="/matchings">
-            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/matchings') ? 'bg-gray-300' : ''}">
+        <a href="/interactions">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/interactions') ? 'bg-gray-300' : ''}">
     	        <span class="material-symbols-outlined mr-1 text-blue-600">diversity_3</span>
-                マッチング
+                交流会
             </div>
         </a>
-        <a href="/mypage">
-            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/mypage') ? 'bg-gray-300' : ''}">
-    	        <span class="material-symbols-outlined mr-1 text-blue-600">account_circle</span>
-                マイページ
+        <a href="/settings">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/settings') ? 'bg-gray-300' : ''}">
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">settings</span>
+                設定
             </div>
         </a>
         {#if user}
@@ -126,7 +126,7 @@
         </div>
         {/if}
     </div>
-    <div class="overflow-auto py-10 w-full">
+    <div class="overflow-auto pt-10 pb-30 w-full">
         {@render children()}
     </div>
 </div>
@@ -145,10 +145,10 @@
 			    イベント
 		    </div>
         </a>
-        <a href="/matchings">
-		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/matchings') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/matchings') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">diversity_3</span>
-			    マッチング
+        <a href="/interactions">
+		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/interactions') ? 'text-blue-600' : ''}">
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/interactions') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">diversity_3</span>
+			    交流会
 		    </div>
         </a>
 	</div>

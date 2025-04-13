@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -27,7 +27,7 @@ app.get("/", zValidator('query', z.object({
 }).partial()), async (c) => {
     const { userId } = c.req.valid('query')
     const db = drizzle(c.env.DB)
-    let matchingsBaseObject
+    let interactionsBaseObject
     if (userId) {
         const [user] = await db.select().from(users).where(eq(users.userId, userId))
         if (!user) {
@@ -37,23 +37,23 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        matchingsBaseObject = await db.select().from(matchings).where(and(eq(matchings.membershipUuid, membership.membershipUuid), eq(matchings.isValid, 1)))
+        interactionsBaseObject = await db.select().from(interactions).where(and(eq(interactions.membershipUuid, membership.membershipUuid), eq(interactions.isValid, 1)))
     } else {
-        matchingsBaseObject = await db.select().from(matchings).where(eq(matchings.isValid, 1))
+        interactionsBaseObject = await db.select().from(interactions).where(eq(interactions.isValid, 1))
     }
-    const matchingsObject = await Promise.all(matchingsBaseObject.map(async (matching) => {
-        const [matchingMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
-        const [matchingUser] = await db.select().from(users).where(eq(users.userUuid, matchingMembership.userUuid))
-        const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, matchingMembership.userUuid))
-        const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, matchingMembership.organizationUuid))
-        const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, matchingMembership.organizationUuid))
+    const interactionsObject = await Promise.all(interactionsBaseObject.map(async (interaction) => {
+        const [interactionMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, interaction.membershipUuid))
+        const [interactionUser] = await db.select().from(users).where(eq(users.userUuid, interactionMembership.userUuid))
+        const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, interactionMembership.userUuid))
+        const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, interactionMembership.organizationUuid))
+        const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, interactionMembership.organizationUuid))
         const data = {
-            matchingId: matching.matchingId,
-            title: matching.title,
-            description: matching.description,
-            buttons: matching.buttons,
-            thumbnail: matching.thumbnail,
-            userId: matchingUser.userId,
+            interactionId: interaction.interactionId,
+            title: interaction.title,
+            description: interaction.description,
+            buttons: interaction.buttons,
+            thumbnail: interaction.thumbnail,
+            userId: interactionUser.userId,
             userDisplayName: userProfile.displayName,
             userAvatar: userProfile.avatar,
             organizationId: organization.organizationId,
@@ -63,31 +63,31 @@ app.get("/", zValidator('query', z.object({
         return data
     }))
     return c.json(
-        { success: true, data: matchingsObject }
+        { success: true, data: interactionsObject }
     )
 })
 
-app.get('/:matching_id', async (c) => {
-    const matchingId = c.req.param('matching_id')
+app.get('/:interaction_id', async (c) => {
+    const interactionId = c.req.param('interaction_id')
     const db = drizzle(c.env.DB)
-    const [matching] = await db.select().from(matchings).where(eq(matchings.matchingId, matchingId))
-    if (!matching) {
+    const [interaction] = await db.select().from(interactions).where(eq(interactions.interactionId, interactionId))
+    if (!interaction) {
         return c.json(
-            { success: false, message: "Matching not found" },
+            { success: false, message: "Interaction not found" },
             404,
         );
     }
-    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
+    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, interaction.membershipUuid))
     const [user] = await db.select().from(users).where(eq(users.userUuid, membership.userUuid))
     const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, membership.userUuid))
     const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, membership.organizationUuid))
     const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, membership.organizationUuid))
     const data = {
-        matchingId: matching.matchingId,
-        title: matching.title,
-        description: matching.description,
-        buttons: matching.buttons,
-        thumbnail: matching.thumbnail,
+        interactionId: interaction.interactionId,
+        title: interaction.title,
+        description: interaction.description,
+        buttons: interaction.buttons,
+        thumbnail: interaction.thumbnail,
         userId: user.userId,
         userDisplayName: userProfile.displayName,
         userAvatar: userProfile.avatar,
@@ -146,22 +146,22 @@ app.post('/', zValidator('form', z.object({
         }
         url = data.url
     }
-    const matching: typeof matchings.$inferInsert = {
-        matchingUuid: crypto.randomUUID(),
-        matchingId: generateId(),
+    const interaction: typeof interactions.$inferInsert = {
+        interactionUuid: crypto.randomUUID(),
+        interactionId: generateId(),
         membershipUuid: membership.membershipUuid,
         title: title as string,
         description: description as string,
         buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
         thumbnail: url,
     }
-    await db.insert(matchings).values(matching).execute()
+    await db.insert(interactions).values(interaction).execute()
     return c.json(
-        { success: true, matchingId: matching.matchingId },
+        { success: true, interactionId: interaction.interactionId },
     )
 })
 
-app.put('/:matching_id', zValidator('form', z.object({
+app.put('/:interaction_id', zValidator('form', z.object({
     sessionUuid: z.string(),
     title: z.string(),
     description: z.string(),
@@ -179,12 +179,12 @@ app.put('/:matching_id', zValidator('form', z.object({
     thumbnail: true
 })), async (c) => {
     const { title, description, buttons, thumbnail } = await c.req.parseBody();
-    const matchingId = c.req.param("matching_id")
+    const interactionId = c.req.param("interaction_id")
     const db = drizzle(c.env.DB)
     const session = c.get("session")
-    const [matching] = await db.select().from(matchings).where(eq(matchings.matchingId, matchingId))
-    const [matchingMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
-    if (matchingMembership.userUuid != session.userUuid) {
+    const [interaction] = await db.select().from(interactions).where(eq(interactions.interactionId, interactionId))
+    const [interactionMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, interaction.membershipUuid))
+    if (interactionMembership.userUuid != session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
@@ -225,27 +225,27 @@ app.put('/:matching_id', zValidator('form', z.object({
     const updatedDetail = Object.fromEntries(
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
-    db.update(matchings).set(updatedDetail).where(eq(matchings.matchingId, matchingId)).execute()
+    db.update(interactions).set(updatedDetail).where(eq(interactions.interactionId, interactionId)).execute()
     return c.json(
         { success: true }
     )
 })
 
-app.put('/:matching_id/is_valid', zValidator('json', z.object({
+app.put('/:interaction_id/is_valid', zValidator('json', z.object({
     sessionUuid: z.string(),
 })), async(c) => {
     const db = drizzle(c.env.DB)
-    const matchingId = c.req.param("matching_id")
+    const interactionId = c.req.param("interaction_id")
     const session = c.get("session")
-    const [matching] = await db.select().from(matchings).where(eq(matchings.matchingId, matchingId))
-    const [matchingMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, matching.membershipUuid))
-    if (matchingMembership.userUuid != session.userUuid) {
+    const [interaction] = await db.select().from(interactions).where(eq(interactions.interactionId, interactionId))
+    const [interactionMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, interaction.membershipUuid))
+    if (interactionMembership.userUuid != session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
         )
     }
-    db.update(matchings).set({isValid: (matching.isValid ? 0 : 1)}).where(eq(matchings.matchingId, matchingId)).execute()
+    db.update(interactions).set({isValid: (interaction.isValid ? 0 : 1)}).where(eq(interactions.interactionId, interactionId)).execute()
     return c.json(
         { success: true }
     )
