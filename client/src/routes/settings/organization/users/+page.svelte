@@ -165,7 +165,6 @@
     <p class="w-full text-center text-3xl font-bold mt-5">組織設定/ユーザー登録設定</p>
     {#if organization}
     <p class="w-full text-center text-2xl underline mt-5">ユーザー追加</p>
-
     <form on:submit|preventDefault={handleSubmit} class="space-y-4 mt-5">
         <FormInputField
           id="newUserId"

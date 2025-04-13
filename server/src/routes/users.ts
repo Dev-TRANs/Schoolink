@@ -23,7 +23,7 @@ const app = new Hono<Env>();
 
 app.get("/", zValidator('query', z.object({
     organizationId: z.string(),
-}).required()), async (c: any) => {
+}).partial()), async (c: any) => {
     const { organizationId } = c.req.valid('query')
     const db = drizzle(c.env.DB)
     const [organization] = await db.select().from(organizations).where(eq(organizations.organizationId, organizationId)).execute()
