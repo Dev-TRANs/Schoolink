@@ -96,4 +96,13 @@
           {loading ? 'ログイン中...' : 'ログイン'}
         </button>
     </form>
+    <div class="w-full mt-10 flex flex-col items-center gap-5">
+      <p class="text-center text-3xl font-bold font-AllertaStencil">Project Schoolink</p>
+      <a href="https://seitokaishinko.org/" target="_blank" rel="noopener noreferrer">
+          <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" >
+      </a>
+      <a href="https://trans.stki.org/" target="_blank" rel="noopener noreferrer">
+          <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" >
+      </a>
+  </div>
 </div>
