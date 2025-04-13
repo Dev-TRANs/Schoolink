@@ -80,7 +80,7 @@
        {#each filteredEvents as event}
          <a href={`/events/${event.eventId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3" src={event.thumbnail} alt="thumbnail" />
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 border border-gray-500 border-1" src={event.thumbnail} alt="thumbnail" />
              <p class="text-xl w-full text-left mt-2 truncate">{event.title}</p>
              <div class="flex items-center gap-1 mt-2">
                <img src={event.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />

@@ -121,7 +121,7 @@
         {#each projects as project}
          <a href={`/projects/${project.projectId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm min-w-sm" src={project.thumbnail} alt="thumbnail" />
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm min-w-sm border border-gray-500 border-1" src={project.thumbnail} alt="thumbnail" />
              <p class="text-xl w-full text-left mt-2 truncate">{project.title}</p>
              <div class="flex items-center gap-1 mt-2">
                <img src={project.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
@@ -144,7 +144,7 @@
         {#each events as event}
          <a href={`/projects/${event.eventId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm" src={event.thumbnail} alt="thumbnail" />
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm border border-gray-500 border-1" src={event.thumbnail} alt="thumbnail" />
              <p class="text-xl w-full text-left mt-2 truncate">{event.title}</p>
              <div class="flex items-center gap-1 mt-2">
                <img src={event.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
@@ -167,7 +167,7 @@
         {#each interactions as interaction}
          <a href={`/projects/${interaction.interactionId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm" src={interaction.thumbnail} alt="thumbnail" />
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm border border-gray-500 border-1" src={interaction.thumbnail} alt="thumbnail" />
              <p class="text-xl w-full text-left mt-2 truncate">{interaction.title}</p>
              <div class="flex items-center gap-1 mt-2">
                <img src={interaction.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
