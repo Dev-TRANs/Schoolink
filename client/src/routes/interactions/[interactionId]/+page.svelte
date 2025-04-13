@@ -61,10 +61,10 @@
                 <p class="text-sm hover:underline">{interaction.userDisplayName}</p>
             </a>
             <p class="text-gray-500 text-sm">in</p>
-            <a href="/organizations/{interaction.userId}">
+            <a href="/organizations/{interaction.organizationId}">
                 <img src={interaction.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
             </a>
-            <a href="/organizations/{interaction.userId}">
+            <a href="/organizations/{interaction.organizationId}">
                 <p class="text-sm truncate hover:underline">{interaction.organizationDisplayName}</p>
             </a>
         </div>

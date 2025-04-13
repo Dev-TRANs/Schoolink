@@ -61,10 +61,10 @@
                 <p class="text-sm hover:underline">{project.userDisplayName}</p>
             </a>
             <p class="text-gray-500 text-sm">in</p>
-            <a href="/organizations/{project.userId}">
+            <a href="/organizations/{project.organizationId}">
                 <img src={project.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
             </a>
-            <a href="/organizations/{project.userId}">
+            <a href="/organizations/{project.organizationId}">
                 <p class="text-sm truncate hover:underline">{project.organizationDisplayName}</p>
             </a>
         </div>

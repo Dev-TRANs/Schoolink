@@ -64,10 +64,10 @@
                 <p class="text-sm hover:underline">{event.userDisplayName}</p>
             </a>
             <p class="text-gray-500 text-sm">in</p>
-            <a href="/organizations/{event.userId}">
+            <a href="/organizations/{event.organizationId}">
                 <img src={event.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
             </a>
-            <a href="/organizations/{event.userId}">
+            <a href="/organizations/{event.organizationId}">
                 <p class="text-sm truncate hover:underline">{event.organizationDisplayName}</p>
             </a>
         </div>
