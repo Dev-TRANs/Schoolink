@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -87,7 +87,7 @@ app.put("/:organization_id", zValidator('form', z.object({
     const updatedProfile = Object.fromEntries(
         Object.entries(newProfile).filter(([_, value]) => value !== null)
     );
-    db.update(profiles).set(updatedProfile).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
+    await db.update(profiles).set(updatedProfile).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -102,7 +102,7 @@ app.put("/:organization_id/id", zValidator('json', z.object({
     const { newOrganizationId } = c.req.valid("json")
     const organization = c.get("organization")
     const db = drizzle(c.env.DB)
-    db.update(organizations).set({ organizationId: newOrganizationId.toLowerCase() }).where(eq(organizations.organizationUuid, organization.organizationUuid)).execute()
+    await db.update(organizations).set({ organizationId: newOrganizationId.toLowerCase() }).where(eq(organizations.organizationUuid, organization.organizationUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -137,7 +137,7 @@ app.post("/:organization_id/avatar", zValidator('form', z.object({
             500,
         );
     }
-    db.update(profiles).set({ avatar: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
+    await db.update(profiles).set({ avatar: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
     return c.json(
         { success: true }
     )

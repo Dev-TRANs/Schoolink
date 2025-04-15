@@ -5,20 +5,7 @@
 
     import FormInputField from "../../../../lib/components/FormInputField.svelte";
     import ImgField from "../../../../lib/components/ImgField.svelte"
-
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
+    import type { UserType } from "../../../../lib/types";
 
     let sessionUuid = ""
 
@@ -29,7 +16,7 @@
         }
     });
 
-    let user: userType = undefined
+    let user: UserType = undefined
 
     async function loadUser() {
         sessionUuid = localStorage.getItem("sessionUuid")

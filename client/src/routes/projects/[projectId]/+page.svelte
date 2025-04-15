@@ -3,24 +3,11 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    
-    type projectType = {
-        projectId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
+    import type { ProjectType } from "../../../lib/types";}
 
     const projectId = $page.params.projectId;
 
-    let project = $state<projectType>();
+    let project = $state<ProjectType>();
 
     let userId = $state<string>();
 

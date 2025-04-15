@@ -2,22 +2,9 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
+    import type { UserType } from "../../lib/types";
 
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
-
-    let user = $state<userType>();
+    let user = $state<UserType>();
 
     onMount(async () => {
         const sessionUuid = localStorage.getItem("sessionUuid")

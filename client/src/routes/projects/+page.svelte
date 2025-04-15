@@ -2,28 +2,12 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
+    import type { ProjectType } from "../../lib/types";
    
-    type projectType = {
-     projectId: string;
-     title: string
-     description: string;
-     buttons: Array<{
-       content: string;
-       url: string
-     }>;
-     thumbnail: string;
-     userId: string;
-     userDisplayName: string;
-     userAvatar: string;
-     organizationId: string;
-     organizationDisplayName: string;
-     organizationAvatar: string;
-    };
-   
-    let projects = $state<projectType[]>([]);
-    let filteredProjects = $state<projectType[]>([]);
+    let projects = $state<ProjectType[]>([]);
+    let filteredProjects = $state<ProjectType[]>([]);
     let searchQuery = $state<string>('');
-    let fuse: Fuse<projectType>;
+    let fuse: Fuse<ProjectType>;
    
     onMount(async () => {
      const response = await fetch(`${PUBLIC_API_URL}/projects`);

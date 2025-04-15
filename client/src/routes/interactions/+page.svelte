@@ -2,28 +2,12 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
+    import type { InteractionType } from "../../lib/types";
    
-    type interactionType = {
-     interactionId: string;
-     title: string
-     description: string;
-     buttons: Array<{
-       content: string;
-       url: string
-     }>;
-     thumbnail: string;
-     userId: string;
-     userDisplayName: string;
-     userAvatar: string;
-     organizationId: string;
-     organizationDisplayName: string;
-     organizationAvatar: string;
-    };
-   
-    let interactions = $state<interactionType[]>([]);
-    let filteredInteractions = $state<interactionType[]>([]);
+    let interactions = $state<InteractionType[]>([]);
+    let filteredInteractions = $state<InteractionType[]>([]);
     let searchQuery = $state<string>('');
-    let fuse: Fuse<interactionType>;
+    let fuse: Fuse<InteractionType>;
    
     onMount(async () => {
      const response = await fetch(`${PUBLIC_API_URL}/interactions`);

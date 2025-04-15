@@ -3,33 +3,9 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
+    import type { OrganizationType } from "../../../lib/types";
 
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
-
-    type organizationType = {
-        organizationId: string;
-        displayName: string;
-        bio: string;
-        avatar: string;
-        instagramId: string;
-        threadsId: string;
-        twitterId: string;
-        users: Omit<userType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
-    }
-
-    let organization = $state<organizationType>();
+    let organization = $state<OrganizationType>();
 
     const organizationId = $page.params.organizationId;
 

@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -99,7 +99,7 @@ app.put("/:user_id/id", zValidator('json', z.object({
     const { newUserId } = c.req.valid("json")
     const session = c.get("session")
     const db = drizzle(c.env.DB)
-    db.update(users).set({ userId: newUserId.toLowerCase() }).where(eq(users.userUuid, session.userUuid)).execute()
+    await db.update(users).set({ userId: newUserId.toLowerCase() }).where(eq(users.userUuid, session.userUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -129,7 +129,7 @@ app.put("/:user_id", zValidator('form', z.object({
     const updatedProfile = Object.fromEntries(
         Object.entries(newProfile).filter(([_, value]) => value !== null)
     );
-    db.update(profiles).set(updatedProfile).where(eq(profiles.userUuid, session.userUuid)).execute()
+    await db.update(profiles).set(updatedProfile).where(eq(profiles.userUuid, session.userUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -164,7 +164,7 @@ app.post("/:user_id/avatar", zValidator('form', z.object({
             500,
         );
     }
-    db.update(profiles).set({ avatar: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.userUuid, session.userUuid)).execute()
+    await db.update(profiles).set({ avatar: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.userUuid, session.userUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -193,7 +193,7 @@ app.put("/:user_id/role", zValidator('json', z.object({
             403,
         )
     }
-    db.update(memberships).set({ role: (targetMembership.role == "member" ? "admin" : "member") }).where(eq(memberships.userUuid, targetUser.userUuid)).execute()
+    await db.update(memberships).set({ role: (targetMembership.role == "member" ? "admin" : "member") }).where(eq(memberships.userUuid, targetUser.userUuid)).execute()
     return c.json(
         { success: true }
     )
@@ -222,7 +222,7 @@ app.put("/:user_id/is_valid", zValidator('json', z.object({
             403,
         )
     }
-    db.update(users).set({ isValid: (targetUser.isValid == 1 ? 0 : 1) }).where(eq(users.userUuid, targetUser.userUuid)).execute()
+    await db.update(users).set({ isValid: (targetUser.isValid == 1 ? 0 : 1) }).where(eq(users.userUuid, targetUser.userUuid)).execute()
     return c.json(
         { success: true }
     )

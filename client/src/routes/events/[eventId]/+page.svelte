@@ -3,27 +3,11 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    
-    type eventType = {
-        eventId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        place: string;
-        startAt: number;
-        endAt: number;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
+    import type { EventType } from "../../../lib/types"
 
     const eventId = $page.params.eventId;
 
-    let event = $state<eventType>();
+    let event = $state<EventType>();
 
     let userId = $state<string>();
 

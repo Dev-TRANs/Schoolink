@@ -6,24 +6,11 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
-    
-    type projectType = {
-        projectId: string;
-        title: string
-        description: string;
-        buttons: string;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
+    import type { ProjectType } from '../../../../lib/types';}
 
     const projectId = $page.params.projectId;
 
-    let project;
+    let project: ProjectType;
 
     let userId;
 

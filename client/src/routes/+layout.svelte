@@ -4,23 +4,11 @@
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { page } from '$app/state';
+    import type { UserType } from '../lib/types'; 
+
 	let { children } = $props();
 
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
-
-    let user = $state<userType>();
+    let user = $state<UserType>();
 
     async function loadUser() {
         const sessionUuid = localStorage.getItem("sessionUuid")

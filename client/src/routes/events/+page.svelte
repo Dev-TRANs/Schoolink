@@ -2,28 +2,12 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
+    import type { EventType } from "../../lib/types";
    
-    type eventType = {
-        eventId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        place: string;
-        startAt: number;
-        endAt: number;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
-   
-    let events = $state<eventType[]>([]);
-    let filteredEvents = $state<eventType[]>([]);
+    let events = $state<EventType[]>([]);
+    let filteredEvents = $state<EventType[]>([]);
     let searchQuery = $state<string>('');
-    let fuse: Fuse<eventType>;
+    let fuse: Fuse<EventType>;
    
     onMount(async () => {
      const response = await fetch(`${PUBLIC_API_URL}/events`);

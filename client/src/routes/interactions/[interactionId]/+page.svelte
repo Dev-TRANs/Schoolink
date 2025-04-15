@@ -3,24 +3,11 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    
-    type interactionType = {
-        interactionId: string;
-        title: string
-        description: string;
-        buttons: string;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
+    import type { InteractionType } from "../../../lib/types";}
 
     const interactionId = $page.params.interactionId;
 
-    let interaction = $state<interactionType>();
+    let interaction = $state<InteractionType>();
 
     let userId = $state<string>();
 

@@ -5,31 +5,7 @@
     import { goto } from "$app/navigation";
 
     import FormInputField from "../../../../lib/components/FormInputField.svelte";
-
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
-
-    type organizationType = {
-        organizationId: string;
-        displayName: string;
-        bio: string;
-        avatar: string;
-        instagramId: string;
-        threadsId: string;
-        twitterId: string;
-        users: Omit<userType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
-    }
+    import type { UserType, OrganizationType } from "../../../../lib/types";
 
     let sessionUuid = ""
 
@@ -42,7 +18,7 @@
         }
     });
 
-    let organization: organizationType
+    let organization: OrganizationType
 
     async function loadOrganization() {
         sessionUuid = localStorage.getItem("sessionUuid")
@@ -59,14 +35,14 @@
                 })
             })
             const sessionData = await sessionResponse.json();
-            let user: userType
+            let user: UserType
             if(sessionData.isValid) {
                 const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
                 const data = await response.json();
-                user = data.data as userType;
+                user = data.data as UserType;
                 const orgResponcse = await fetch(`${PUBLIC_API_URL}/organizations/${user.organizationId}`)
                 const orgData = await orgResponcse.json()
-                organization = orgData.data as organizationType;
+                organization = orgData.data as OrganizationType;
             }
         } else {
             organization = undefined

@@ -7,8 +7,9 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
+    import type { EventType } from "../../../../lib/types"
     
-    type eventType = {
+    type EventType = {
         eventId: string;
         title: string
         description: string;
@@ -24,7 +25,7 @@
 
     const eventId = $page.params.eventId;
 
-    let event;
+    let event: EventType;
 
     let userId;
 

@@ -225,7 +225,7 @@ app.put('/:interaction_id', zValidator('form', z.object({
     const updatedDetail = Object.fromEntries(
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
-    db.update(interactions).set(updatedDetail).where(eq(interactions.interactionId, interactionId)).execute()
+    await db.update(interactions).set(updatedDetail).where(eq(interactions.interactionId, interactionId)).execute()
     return c.json(
         { success: true }
     )
@@ -245,7 +245,7 @@ app.put('/:interaction_id/is_valid', zValidator('json', z.object({
             403,
         )
     }
-    db.update(interactions).set({isValid: (interaction.isValid ? 0 : 1)}).where(eq(interactions.interactionId, interactionId)).execute()
+    await db.update(interactions).set({isValid: (interaction.isValid ? 0 : 1)}).where(eq(interactions.interactionId, interactionId)).execute()
     return c.json(
         { success: true }
     )

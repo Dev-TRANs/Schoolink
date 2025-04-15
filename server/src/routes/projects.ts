@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -225,7 +225,7 @@ app.put('/:project_id', zValidator('form', z.object({
     const updatedDetail = Object.fromEntries(
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
-    db.update(projects).set(updatedDetail).where(eq(projects.projectId, projectId)).execute()
+    await db.update(projects).set(updatedDetail).where(eq(projects.projectId, projectId)).execute()
     return c.json(
         { success: true }
     )
@@ -245,7 +245,7 @@ app.put('/:project_id/is_valid', zValidator('json', z.object({
             403,
         )
     }
-    db.update(projects).set({isValid: (project.isValid ? 0 : 1)}).where(eq(projects.projectId, projectId)).execute()
+    await db.update(projects).set({isValid: (project.isValid ? 0 : 1)}).where(eq(projects.projectId, projectId)).execute()
     return c.json(
         { success: true }
     )

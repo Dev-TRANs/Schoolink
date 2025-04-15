@@ -6,24 +6,11 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
-    
-    type interactionType = {
-        interactionId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
+    import type { InteractionType } from '../../../../lib/types';
 
     const interactionId = $page.params.interactionId;
 
-    let interaction;
+    let interaction: InteractionType;
 
     let userId;
 

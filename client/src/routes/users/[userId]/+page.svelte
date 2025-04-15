@@ -3,75 +3,17 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
+    import type { UserType, ProjectType, EventType, InteractionType } from "../../../lib/types";
 
-    type userType = {
-        userId: string;
-        displayName: string;
-        bio: string | null;
-        avatar: string;
-        instagramId: string | null;
-        threadsId: string | null;
-        twitterId: string | null;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-        role: "admin" | "member";
-    };
-
-    type projectType = {
-        projectId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
-
-    type eventType = {
-        eventId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        place: string;
-        startAt: number;
-        endAt: number;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
-
-    type interactionType = {
-        interactionId: string;
-        title: string
-        description: string;
-        buttons: Array<{ content: string, url: string }>;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
-
-    let user = $state<userType>();
+    let user = $state<UserType>();
 
     const userId = $page.params.userId;
 
-    let projects = $state<projectType[]>([])
+    let projects = $state<ProjectType[]>([])
 
-    let events = $state<eventType[]>([])
+    let events = $state<EventType[]>([])
 
-    let interactions = $state<interactionType[]>([])
+    let interactions = $state<InteractionType[]>([])
 
     onMount(async() => {
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
