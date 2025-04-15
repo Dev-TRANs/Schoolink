@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    import type { InteractionType } from "../../../lib/types";}
+    import type { InteractionType } from "../../../lib/types";
 
     const interactionId = $page.params.interactionId;
 

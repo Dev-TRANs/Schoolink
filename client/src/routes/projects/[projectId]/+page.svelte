@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    import type { ProjectType } from "../../../lib/types";}
+    import type { ProjectType } from "../../../lib/types";
 
     const projectId = $page.params.projectId;
 
