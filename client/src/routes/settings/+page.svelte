@@ -1,95 +1,184 @@
-<script lang="ts">
-    import { goto } from "$app/navigation";
+<script>
     import { PUBLIC_API_URL } from "$env/static/public";
-    import { onMount } from "svelte";
-    import type { UserType } from "../../lib/types";
+    import { onMount } from 'svelte';
+    import { goto } from '$app/navigation';
 
-    let user = $state<UserType>();
+    import FormInputField from "../../../../lib/components/FormInputField.svelte";
 
-    onMount(async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        if(!sessionUuid){
-            goto('/signin')
+    let userId = '';
+    let sessionUuid = '';
+
+    let currentPassword = '';
+    let newPassword = '';
+    let passwordFormLoading = false;
+    let passwordFormErrorMessage = '';
+    let passwordFormSubmitted = false;
+  
+    async function handlePasswordFormSubmit() {
+      passwordFormSubmitted = true;
+      
+      if (!userId || !currentPassword || !newPassword) {
+        passwordFormErrorMessage = 'すべての項目を入力してください。';
+        return;
+      }
+  
+      passwordFormLoading = true;
+      passwordFormErrorMessage = '';
+  
+      try {
+        const encoder = new TextEncoder();
+        const currentPasswordData = encoder.encode(currentPassword);
+        const currentHashBuffer = await crypto.subtle.digest('SHA-256', currentPasswordData);
+        const hashedCurrentPassword = Array.from(new Uint8Array(currentHashBuffer))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+        const newPasswordData = encoder.encode(newPassword);
+        const newHashBuffer = await crypto.subtle.digest('SHA-256', newPasswordData);
+        const hashedNewPassword = Array.from(new Uint8Array(newHashBuffer))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+        const response = await fetch(`${PUBLIC_API_URL}/auth/change_password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sessionUuid,
+            hashedCurrentPassword,
+            hashedNewPassword
+          })
+        });
+        const result = await response.json();
+        if (result.success !== true)  {
+          passwordFormErrorMessage = result.message || '認証に失敗しました。';
         }
-        const userId = localStorage.getItem("userId")
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        user = data.data;
+      } catch (error) {
+        console.error('Login error:', error);
+        passwordFormErrorMessage = 'サーバーとの通信中にエラーが発生しました。';
+      } finally {
+        passwordFormLoading = false;
+      }
+    }
+    
+    let newUserId = '';
+    let idFormLoading = false;
+    let idFormErrorMessage = '';
+    let idFormSubmitted = false;
+
+    async function handleIdFormSubmit() {
+      idFormSubmitted = true;
+      
+      if (!newUserId) {
+        idFormErrorMessage = '新しいIDを入力してください。';
+        return;
+      }
+  
+      idFormLoading = true;
+      idFormErrorMessage = '';
+  
+      try {
+        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}/id`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sessionUuid,
+            newUserId,
+          })
+        });
+        const result = await response.json();
+        if (result.success !== true)  {
+          idFormErrorMessage = result.message || '送信に失敗しました。';
+        } else {
+            localStorage.setItem("userId", newUserId);
+            userId = newUserId;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        idFormErrorMessage = 'サーバーとの通信中にエラーが発生しました。';
+      } finally {
+        idFormLoading = false;
+      }
+    }
+    
+    onMount(async () => {
+        sessionUuid = localStorage.getItem("sessionUuid");
+        userId = localStorage.getItem("userId");
+        if(!sessionUuid){
+            goto('/signin');
+        }
     });
 
-    const signOut = async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        localStorage.removeItem("sessionUuid")
-        localStorage.removeItem("userId")
-        await fetch(`${PUBLIC_API_URL}/auth/sign_out`, {
-            method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                    sessionUuid,
-            })
-        })
-        goto('/')
-    }
 </script>
 
-
-{#if user}
-<div class="w-full flex flex-col mx-auto px-5 sm:px-10 items-center">
-    <div class="grid grid-cols-3 gap-10 max-w-lg">
-        <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square" src={user.avatar} alt="avatar" />
-        <div class="col-span-2 flex flex-col justify-center">
-            <a href="/users/{user.userId}">
-                <p class="text-3xl font-bold hover:underline">{user.displayName}<span class="ml-1 text-3xl text-gray-500 hover:underline">@{user.userId}</span></p>
-            </a>
-            <p class="text-md text-gray-500 truncate">in <a class="hover:underline text-black" href="/organizations/{user.organizationId}">{user.organizationDisplayName}</a></p>
-            <div class="flex items-center gap-1">
-                {#if user.twitterId || user.instagramId || user.threadsId}
-                <p class="text-gray-500">SNS:</p>
-                {/if}
-                {#if user.twitterId}
-                <a class="hover:underline" href="https://x.com/{user.twitterId}">Twitter</a>
-                {/if}
-                {#if user.instagramId}
-                <a class="hover:underline" href="https://www.instagram.com/{user.instagramId}">Instagram</a>
-                {/if}
-                {#if user.threadsId}
-                <a class="hover:underline" href="https://www.threads.net/@{user.threadsId}">Threads</a>
-                {/if}
-            </div>
-        </div>
-    </div>
-    <div class="w-full mt-5">
-        <p class="w-full text-center text-3xl font-bold">ユーザー設定</p>
-        <a href="/settings/user/account">
-            <p class="w-full text-center mt-3 text-2xl hover:underline">アカウント設定</p>
-        </a>
-        <a href="/settings/user/profile">
-            <p class="w-full text-center mt-3 text-2xl hover:underline">プロフィール設定</p>
-        </a>
-    </div>
-    {#if user.role === "admin"}
-    <div class="w-full mt-5">
-        <p class="w-full text-center text-3xl font-bold">組織設定</p>
-        <a href="/settings/organization/users">
-            <p class="w-full text-center mt-3 text-2xl hover:underline">ユーザー登録設定</p>
-        </a>
-        <a href="/settings/organization/profile">
-            <p class="w-full text-center mt-3 text-2xl hover:underline">プロフィール設定</p>
-        </a>
-    </div>
-    {/if}
-    <button class="mt-5 button-red" onclick={signOut}>サインアウト</button>
-
-    <div class="w-full mt-10 flex flex-col items-center gap-5">
-        <p class="text-center text-3xl font-bold font-AllertaStencil">Project Schoolink</p>
-        <a href="https://seitokaishinko.org/" target="_blank" rel="noopener noreferrer">
-            <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" >
-        </a>
-        <a href="https://trans.stki.org/" target="_blank" rel="noopener noreferrer">
-            <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" >
-        </a>
-    </div>
+<div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
+    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/settings">＜ 設定</a>
+    <p class="w-full text-center text-3xl font-bold mt-5">ユーザー設定/アカウント設定</p>
+    <p class="w-full text-center text-2xl underline mt-5">パスワード変更</p>
+    <form on:submit|preventDefault={handlePasswordFormSubmit} class="space-y-4 mt-3">
+        <FormInputField
+          id="currentPassword"
+          label="現在のパスワード"
+          type="password"
+          bind:value={currentPassword}
+          error="現在のパスワードを入力してください"
+          showError={passwordFormSubmitted && !currentPassword}
+          disabled={passwordFormLoading}
+        />
+        <FormInputField
+          id="newPassword"
+          label="新しいパスワード"
+          type="password"
+          bind:value={newPassword}
+          error="新しいパスワードを入力してください"
+          showError={passwordFormSubmitted && !newPassword}
+          disabled={passwordFormLoading}
+        />
+        {#if passwordFormErrorMessage}
+          <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+            {passwordFormErrorMessage}
+          </div>
+        {/if}
+        <button 
+          type="submit" 
+          class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed"
+          disabled={passwordFormLoading}
+        >
+          {passwordFormLoading ? '送信中...' : '送信'}
+        </button>
+        {#if passwordFormSubmitted && !passwordFormLoading && !passwordFormErrorMessage}
+          <div class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
+            送信に成功しました
+          </div>
+        {/if}
+    </form>
+    <p class="w-full text-center text-2xl underline mt-5">ID変更</p>
+    <form on:submit|preventDefault={handleIdFormSubmit} class="space-y-4 mt-3">
+        <FormInputField
+          id="newUserId"
+          label="新しいID"
+          bind:value={newUserId}
+          error="新しいIDを入力してください"
+          showError={idFormSubmitted && !newUserId}
+          disabled={idFormLoading}
+        />
+        {#if idFormErrorMessage}
+          <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+            {idFormErrorMessage}
+          </div>
+        {/if}
+        <button 
+          type="submit" 
+          class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed"
+          disabled={idFormLoading}
+        >
+          {idFormLoading ? '送信中...' : '送信'}
+        </button>
+        {#if idFormSubmitted && !idFormLoading && !idFormErrorMessage}
+          <div class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
+            送信に成功しました
+          </div>
+        {/if}
+    </form>
 </div>
-{/if}
