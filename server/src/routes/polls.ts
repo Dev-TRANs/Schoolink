@@ -103,9 +103,9 @@ app.get('/:poll_id', async (c) => {
 })
 
 app.post('/:poll_id/vote', zValidator('json', z.object({
-    choiceName: z.string().optional(),
-    sessionUuid: z.string().optional(),
-    clientUuid: z.string().optional()
+    choiceName: z.string().optional().nullable(),
+    sessionUuid: z.string().optional().nullable(),
+    clientUuid: z.string().optional().nullable()
 })), async(c) => {
     const { choiceName, clientUuid } = c.req.valid('json')
     const pollId = c.req.param('poll_id')
