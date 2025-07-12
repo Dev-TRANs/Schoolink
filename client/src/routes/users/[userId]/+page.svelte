@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    import type { UserType, ProjectType, EventType, InteractionType } from "../../../lib/types";
+    import type { UserType, ProjectType, EventType, PollType } from "../../../lib/types";
 
     let user = $state<UserType>();
 
@@ -13,7 +13,7 @@
 
     let events = $state<EventType[]>([])
 
-    let interactions = $state<InteractionType[]>([])
+    let polls = $state<PollType[]>([])
 
     onMount(async() => {
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -25,106 +25,80 @@
         const eventResponce = await fetch(`${PUBLIC_API_URL}/events?userId=${userId}`);
         const eventData = await eventResponce.json();
         events = eventData.data;
-        const interactionResponce = await fetch(`${PUBLIC_API_URL}/interactions?userId=${userId}`);
-        const interactionData = await interactionResponce.json();
-        interactions = interactionData.data;
+        const pollResponce = await fetch(`${PUBLIC_API_URL}/polls?userId=${userId}`);
+        const pollData = await pollResponce.json();
+        polls = pollData.data;
     })
 </script>
 
 {#if user}
-<div class="w-full flex flex-col mx-auto px-5 sm:px-10 items-center">
-    <div class="grid grid-cols-3 gap-10 max-w-lg">
-        <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square" src={user.avatar} alt="avatar" />
-        <div class="col-span-2 flex flex-col justify-center">
-            <p class="text-3xl font-bold">{user.displayName}<span class="ml-1 text-3xl text-gray-500">@{user.userId}</span></p>
-            <p class="text-md text-gray-500 truncate">in <a class="hover:underline text-black" href="/organizations/{user.organizationId}">{user.organizationDisplayName}</a></p>
-            <div class="flex items-center gap-1">
-                {#if user.twitterId || user.instagramId || user.threadsId}
-                <p class="text-gray-500">SNS:</p>
-                {/if}
+<div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
+        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" />
+        <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
+            <p class="text-3xl font-bold">{user.displayName}</p>
+            <p class="text-gray-500 text-md">
+                ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{user.userId}</span>
+            </p>
+            <p class="text-md text-gray-500">
+                所属: 
+                <a class="hover:underline text-black" href="/organizations/{user.organizationId}">
+                    {user.organizationDisplayName}
+                </a>
+            </p>
+            {#if user.twitterId || user.instagramId || user.threadsId}
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-gray-500">
+                <span>SNS:</span>
                 {#if user.twitterId}
-                <a class="hover:underline" href="https://x.com/{user.twitterId}">Twitter</a>
+                <a class="hover:underline text-blue-500" href="https://x.com/{user.twitterId}">Twitter</a>
                 {/if}
                 {#if user.instagramId}
-                <a class="hover:underline" href="https://www.instagram.com/{user.instagramId}">Instagram</a>
+                <a class="hover:underline text-pink-500" href="https://www.instagram.com/{user.instagramId}">Instagram</a>
                 {/if}
                 {#if user.threadsId}
-                <a class="hover:underline" href="https://www.threads.net/@{user.threadsId}">Threads</a>
+                <a class="hover:underline text-purple-500" href="https://www.threads.net/@{user.threadsId}">Threads</a>
                 {/if}
             </div>
+            {/if}
         </div>
         {#if user.bio}
-        <div class="col-span-3 whitespace-pre-line pt-2">{user.bio}</div>
+        <div class="col-span-full whitespace-pre-line text-gray-700 text-center sm:text-left">{user.bio}</div>
         {/if}
     </div>
-    <div class="w-full mt-5">
-        <p class="w-full text-center text-2xl font-bold">プロジェクト</p>
-        <div class="flex mt-3 overflow-x-scroll gap-6 justify-center w-full">
-        {#each projects as project}
-         <a href={`/projects/${project.projectId}`}>
-           <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm min-w-sm border border-gray-500 border-1" src={project.thumbnail} alt="thumbnail" />
-             <p class="text-xl w-full text-left mt-2 truncate">{project.title}</p>
-             <div class="flex items-center gap-1 mt-2">
-               <img src={project.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-               <p class="text-sm">{project.userDisplayName}</p>
-               <p class="text-gray-500 text-sm">in</p>
-               <img src={project.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-               <p class="text-sm truncate">{project.organizationDisplayName}</p>
-             </div>
-           </div>
-         </a>
-        {/each}
-        {#if projects.length === 0}
-        <p class="text-gray-500 text-lg">プロジェクトがありません</p>
-        {/if}
+
+    {#each [
+        { label: "プロジェクト", items: projects, type: "projects", idKey: "projectId" },
+        { label: "イベント", items: events, type: "projects", idKey: "eventId" },
+        { label: "投票", items: polls, type: "polls", idKey: "pollId" }
+    ] as section}
+    <div class="w-full max-w-6xl">
+        <h2 class="text-2xl font-bold text-center mb-4">{section.label}</h2>
+        {#if section.items.length > 0}
+        <div class="flex overflow-x-auto space-x-6 px-1 sm:px-0">
+            {#each section.items as item}
+            <a href={`/${section.type}/${item[section.idKey]}`}>
+                <div class="min-w-[16rem] max-w-[18rem]">
+                    <img
+                        class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 border border-gray-500"
+                        src={item.thumbnail}
+                        alt="thumbnail"
+                    />
+                    <p class="text-xl w-full text-left mt-2 truncate">{item.title}</p>
+                    <div class="flex items-center gap-1 mt-2">
+                        <img src={item.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" />
+                        <p class="text-sm">{item.userDisplayName}</p>
+                        <p class="text-gray-500 text-sm">in</p>
+                        <img src={item.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" />
+                        <p class="text-sm truncate">{item.organizationDisplayName}</p>
+                    </div>
+                </div>
+            </a>
+            {/each}
         </div>
-    </div>
-    <div class="w-full mt-5">
-        <p class="w-full text-center text-2xl font-bold">イベント</p>
-        <div class="flex mt-3 overflow-x-scroll gap-6 justify-center w-full">
-        {#each events as event}
-         <a href={`/projects/${event.eventId}`}>
-           <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm border border-gray-500 border-1" src={event.thumbnail} alt="thumbnail" />
-             <p class="text-xl w-full text-left mt-2 truncate">{event.title}</p>
-             <div class="flex items-center gap-1 mt-2">
-               <img src={event.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-               <p class="text-sm">{event.userDisplayName}</p>
-               <p class="text-gray-500 text-sm">in</p>
-               <img src={event.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-               <p class="text-sm truncate">{event.organizationDisplayName}</p>
-             </div>
-           </div>
-         </a>
-        {/each}
-        {#if events.length === 0}
-        <p class="text-gray-500 text-lg">イベントがありません</p>
+        {:else}
+        <p class="text-gray-500 text-center mt-4">まだ{section.label}がありません</p>
         {/if}
-        </div>
     </div>
-    <div class="w-full mt-5">
-        <p class="w-full text-center text-2xl font-bold">交流会</p>
-        <div class="flex mt-3 overflow-x-scroll gap-6 justify-center w-full">
-        {#each interactions as interaction}
-         <a href={`/projects/${interaction.interactionId}`}>
-           <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 w-sm border border-gray-500 border-1" src={interaction.thumbnail} alt="thumbnail" />
-             <p class="text-xl w-full text-left mt-2 truncate">{interaction.title}</p>
-             <div class="flex items-center gap-1 mt-2">
-               <img src={interaction.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
-               <p class="text-sm">{interaction.userDisplayName}</p>
-               <p class="text-gray-500 text-sm">in</p>
-               <img src={interaction.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
-               <p class="text-sm truncate">{interaction.organizationDisplayName}</p>
-             </div>
-           </div>
-         </a>
-        {/each}
-        {#if interactions.length === 0}
-        <p class="text-gray-500 text-lg">交流会がありません</p>
-        {/if}
-        </div>
-    </div>
+    {/each}
 </div>
 {/if}

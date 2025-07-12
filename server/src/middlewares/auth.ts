@@ -37,9 +37,9 @@ export const sessionChecker = (isGuestAllowed: boolean = false): MiddlewareHandl
             401,
         );
         const jsonBody = await c.req.json();
-        const guestUuid = (jsonBody?.guestUuid as string)?.toLowerCase(); 
-        if(!guestUuid) return c.json(
-            { success: false, message: "Session Uuid or Guest Uuid is required" },
+        const clientUuid = (jsonBody?.clientUuid as string)?.toLowerCase(); 
+        if(!clientUuid) return c.json(
+            { success: false, message: "Session Uuid is required" },
             401,
         );
         return next()

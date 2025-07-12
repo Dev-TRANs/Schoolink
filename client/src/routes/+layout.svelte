@@ -46,6 +46,7 @@
         } else {
             user = undefined
         }
+        if (!user && !localStorage.getItem("clientUuid")) localStorage.setItem("clientUuid", crypto.randomUUID())
     } 
 
     onMount(loadUser);
@@ -58,7 +59,7 @@
             <p class="text-3xl font-bold font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
         <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
-            <a href="/settings">settings</a>
+            <a href="/settings">{ user ? "settings" : "login" }</a>
         </span>
     </div>
 </header>
@@ -82,16 +83,16 @@
                 イベント
             </div>
         </a>
-        <a href="/interactions">
-            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/interactions') ? 'bg-gray-300' : ''}">
-    	        <span class="material-symbols-outlined mr-1 text-blue-600">diversity_3</span>
-                交流会
+        <a href="/polls">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/polls') ? 'bg-gray-300' : ''}">
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">quiz</span>
+                投票
             </div>
         </a>
         <a href="/settings">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/settings') ? 'bg-gray-300' : ''}">
-    	        <span class="material-symbols-outlined mr-1 text-blue-600">settings</span>
-                設定
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">{ user ? "settings" : "login" }</span>
+                { user ? "設定" : "ログイン" }
             </div>
         </a>
         {#if user}
@@ -133,10 +134,10 @@
 			    イベント
 		    </div>
         </a>
-        <a href="/interactions">
-		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/interactions') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/interactions') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">diversity_3</span>
-			    交流会
+        <a href="/polls">
+		    <div class="text-xs flex flex-col items-center py-2 rounded-r-xl {page.url.pathname.includes('/polls') ? 'text-blue-600' : ''}">
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/polls') ? 'blue' : 'gray'}-600 mb-1 !text-3xl">quiz</span>
+			    投票
 		    </div>
         </a>
 	</div>

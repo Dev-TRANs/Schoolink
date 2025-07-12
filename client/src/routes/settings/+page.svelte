@@ -36,28 +36,34 @@
 
 
 {#if user}
-<div class="w-full flex flex-col mx-auto px-5 sm:px-10 items-center">
-    <div class="grid grid-cols-3 gap-10 max-w-lg">
-        <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square" src={user.avatar} alt="avatar" />
-        <div class="col-span-2 flex flex-col justify-center">
+<div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
+        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" />
+        <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <a href="/users/{user.userId}">
-                <p class="text-3xl font-bold hover:underline">{user.displayName}<span class="ml-1 text-3xl text-gray-500 hover:underline">@{user.userId}</span></p>
+                <p class="text-3xl font-bold hover:underline">{user.displayName}</p>
+                <p class="text-md text-gray-500">ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{user.userId}</span></p>
             </a>
-            <p class="text-md text-gray-500 truncate">in <a class="hover:underline text-black" href="/organizations/{user.organizationId}">{user.organizationDisplayName}</a></p>
-            <div class="flex items-center gap-1">
-                {#if user.twitterId || user.instagramId || user.threadsId}
-                <p class="text-gray-500">SNS:</p>
-                {/if}
+            <p class="text-md text-gray-500">
+                所属: 
+                <a class="hover:underline text-black" href="/organizations/{user.organizationId}">
+                    {user.organizationDisplayName}
+                </a>
+            </p>
+            {#if user.twitterId || user.instagramId || user.threadsId}
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-gray-500">
+                <span>SNS:</span>
                 {#if user.twitterId}
-                <a class="hover:underline" href="https://x.com/{user.twitterId}">Twitter</a>
+                <a class="hover:underline text-blue-500" href="https://x.com/{user.twitterId}">Twitter</a>
                 {/if}
                 {#if user.instagramId}
-                <a class="hover:underline" href="https://www.instagram.com/{user.instagramId}">Instagram</a>
+                <a class="hover:underline text-pink-500" href="https://www.instagram.com/{user.instagramId}">Instagram</a>
                 {/if}
                 {#if user.threadsId}
-                <a class="hover:underline" href="https://www.threads.net/@{user.threadsId}">Threads</a>
+                <a class="hover:underline text-purple-500" href="https://www.threads.net/@{user.threadsId}">Threads</a>
                 {/if}
             </div>
+            {/if}
         </div>
     </div>
     <div class="w-full mt-5">

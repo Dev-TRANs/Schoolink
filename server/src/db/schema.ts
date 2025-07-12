@@ -118,24 +118,6 @@ export const events = sqliteTable('events',
 	]
 );
 
-export const interactions = sqliteTable('interactions', 
-	{
-		interactionUuid: text('interaction_uuid').primaryKey(),
-		interactionId: text('interaction_id').unique().notNull(),
-		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
-		title: text('title').notNull(),
-		description: text('description'),
-		buttons: text('buttons', { mode: "json" }).notNull().$type<Array<{ content: string; url: string }>>(),
-		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
-		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
-		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
-		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
-	},
-	(table) => [
-		index("idx_interactions_membership_uuid").on(table.membershipUuid),
-	]
-);
-
 export const polls = sqliteTable('polls', 
 	{
 		pollUuid: text('poll_uuid').primaryKey(),

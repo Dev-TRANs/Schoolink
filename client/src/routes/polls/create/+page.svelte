@@ -1,67 +1,68 @@
 <script lang="ts">
     import FormInputField from "../../../lib/components/FormInputField.svelte";
     import ImgField from "../../../lib/components/ImgField.svelte";
-    import ButtonField from "../../../lib/components/ButtonField.svelte";
+    import PollChoicesField from "../../../lib/components/PollChoicesField.svelte";
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
-    
+  
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
     let organizationId = "";
-    
-    async function handleSubmit(e) {
+  
+    async function handleSubmit(e: Event) {
       formSubmitted = true;
       loading = true;
       errorMessage = '';
-      
+  
       try {
         data = new FormData(formElement);
-        data.set("sessionUuid", localStorage.getItem("sessionUuid"));
+        data.set("sessionUuid", localStorage.getItem("sessionUuid") || "");
         data.set("organizationId", organizationId);
-        
+  
         const thumbnail = data.get("thumbnail") as File;
-        if (!thumbnail.size) {
+        if (!thumbnail?.size) {
           data.delete("thumbnail");
         }
-        
-        const response = await fetch(`${PUBLIC_API_URL}/interactions`, {
+  
+        const response = await fetch(`${PUBLIC_API_URL}/polls`, {
           method: 'POST',
           body: data
         });
-        
+  
         const result = await response.json();
         if (result.success === true) {
-          goto('/interactions/' + result.interactionId);
+          goto('/polls/' + result.pollId);
         } else {
           errorMessage = result.message || '送信に失敗しました。';
         }
       } catch (error) {
-        console.error('Login error:', error);
+        console.error('Poll creation error:', error);
         errorMessage = 'サーバーとの通信中にエラーが発生しました。';
       } finally {
         loading = false;
       }
     }
-    
+  
     onMount(async () => {
       const sessionUuid = localStorage.getItem("sessionUuid");
-      if(!sessionUuid){
+      if (!sessionUuid) {
         goto('/signin');
-      } else {
-        const userId = localStorage.getItem("userId");
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        organizationId = data.data.organizationId;
+        return;
       }
+  
+      const userId = localStorage.getItem("userId");
+      const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
+      const data = await response.json();
+      organizationId = data.data.organizationId;
     });
   </script>
   
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
-    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/interactions">＜ 交流会</a>
+    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/polls">＜ 交流会</a>
     <h1 class="text-3xl font-bold text-cente mt-8">新規作成</h1>
     <form on:submit|preventDefault={handleSubmit} class="mt-5 w-full" bind:this={formElement}>
       <ImgField
@@ -92,11 +93,11 @@
         multiline={true}
         rows={5}
       />
-      <ButtonField
+      <PollChoicesField
         className="mb-5"
-        id="buttons"
-        name="buttons"
-        label="ボタン"
+        id="choices"
+        name="choices"
+        label="選択肢"
         disabled={loading}
       />
       {#if errorMessage}
@@ -113,3 +114,4 @@
       </button>
     </form>
   </div>
+  

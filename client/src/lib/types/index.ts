@@ -28,7 +28,7 @@ export type EventType = {
 
 export type InteractionType = {
     interactionId: string;
-    title: string
+    title: string;
     description: string;
     buttons: Array<{ content: string, url: string }>;
     thumbnail: string;
@@ -39,6 +39,20 @@ export type InteractionType = {
     organizationDisplayName: string;
     organizationAvatar: string;
 };
+
+export type PollType = {
+    pollId: string;
+    title: string;
+    description: string;
+    pollVoteContents: Array<{ name: string, count: number }>
+    thumbnail: string;
+    userId: string;
+    userDisplayName: string;
+    userAvatar: string;
+    organizationId: string;
+    organizationDisplayName: string;
+    organizationAvatar: string;
+}
 
 export type UserType = {
     userId: string;
@@ -62,5 +76,5 @@ export type OrganizationType = {
     instagramId: string;
     threadsId: string;
     twitterId: string;
-    users: Omit<userType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
+    users: Omit<UserType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
 }

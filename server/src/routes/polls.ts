@@ -83,12 +83,7 @@ app.get('/:poll_id', async (c) => {
     const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, membership.organizationUuid))
     const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, membership.organizationUuid))
     const pollVotes = await db.select().from(votes).where(eq(votes.pollUuid, poll.pollUuid))
-    const pollChoices = Object.entries(
-        pollVotes.reduce<Record<string, number>>((acc, pollVote) => {
-          acc[pollVote.choiceName] = (acc[pollVote.choiceName] || 0) + 1;
-          return acc;
-        }, {})
-      ).map(([name, count]) => ({ name, count }))
+    const pollChoices = poll.choices.map((name: string) => ({ name, count: pollVotes.filter(v => v.choiceName === name).length }));
     const data = {
         pollId: poll.pollId,
         title: poll.title,
@@ -108,19 +103,13 @@ app.get('/:poll_id', async (c) => {
 })
 
 app.post('/:poll_id/vote', zValidator('json', z.object({
-    choiceName: z.string(),
+    choiceName: z.string().optional(),
     sessionUuid: z.string().optional(),
-    guestUuid: z.string().optional()
+    clientUuid: z.string().optional()
 })), async(c) => {
-    const { choiceName, guestUuid } = c.req.valid('json')
+    const { choiceName, clientUuid } = c.req.valid('json')
     const pollId = c.req.param('poll_id')
-    if (!choiceName) {
-        return c.json(
-            { success: false, message: "Choice Name is required" },
-            400,
-        )
-    }
-    const userUuid = c.get("session")?.userUuid || guestUuid
+    const userUuid = c.get("session")?.userUuid || clientUuid
     if (!userUuid) {
         return c.json(
             { success: false, message: "Session Uuid is required" },
@@ -137,6 +126,11 @@ app.post('/:poll_id/vote', zValidator('json', z.object({
         );
     }
     const [vote] = await db.select().from(votes).where(and(eq(votes.pollUuid, poll.pollUuid), eq(votes.userUuid, userUuid)))
+    if (!choiceName) {
+        return c.json(
+            { success: true, data: { choiceName: vote?.choiceName }}
+        )
+    }
     if (!vote) {
         const voteData: typeof votes.$inferInsert = {
             voteUuid: crypto.randomUUID(),

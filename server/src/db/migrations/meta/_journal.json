@@ -50,6 +50,13 @@
       "when": 1752320013475,
       "tag": "0006_peaceful_electro",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1752336933398,
+      "tag": "0007_open_jazinda",
+      "breakpoints": true
     }
   ]
 }
