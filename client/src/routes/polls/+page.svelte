@@ -41,7 +41,7 @@
      <h1 class="text-4xl font-bold">投票</h1>
      <input
        class="bg-gray-200 h-10 w-full mt-4 rounded-xl p-4"
-       placeholder="交流会を検索…"
+       placeholder="投票を検索…"
        type="search"
        value={searchQuery}
        oninput={handleSearch}
