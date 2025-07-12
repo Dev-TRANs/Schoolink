@@ -5,6 +5,7 @@ import users from './users'
 import projects from './projects'
 import events from './events'
 import interactions from './interactions'
+import polls from './polls'
 
 const routes = new Hono();
 
@@ -14,5 +15,6 @@ routes.route('/users', users)
 routes.route('/projects', projects)
 routes.route('/events', events)
 routes.route('/interactions', interactions)
+routes.route('/polls', polls)
 
 export default routes;

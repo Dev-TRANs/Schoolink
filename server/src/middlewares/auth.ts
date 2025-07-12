@@ -1,7 +1,7 @@
 import { Context, Next, MiddlewareHandler } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 
 type Env = {
@@ -16,7 +16,7 @@ type Env = {
     }
 }
 
-export const sessionChecker: MiddlewareHandler<Env> = async (c: Context<Env>, next: Next) => {
+export const sessionChecker = (isGuestAllowed: boolean = false): MiddlewareHandler<Env> => async (c: Context<Env>, next: Next) => {
     if (c.req.method == "GET") {
         return next()
     }
@@ -30,6 +30,19 @@ export const sessionChecker: MiddlewareHandler<Env> = async (c: Context<Env>, ne
         sessionUuid = (jsonBody?.sessionUuid as string)?.toLowerCase();
     } else {
         return c.json({ success: false, message: "Unsupported Content-Type" }, 415);
+    }
+    if(!sessionUuid){
+        if(!isGuestAllowed) return c.json(
+            { success: false, message: "Session Uuid is required" },
+            401,
+        );
+        const jsonBody = await c.req.json();
+        const guestUuid = (jsonBody?.guestUuid as string)?.toLowerCase(); 
+        if(!guestUuid) return c.json(
+            { success: false, message: "Session Uuid or Guest Uuid is required" },
+            401,
+        );
+        return next()
     }
     const db = drizzle(c.env.DB)
     const [ session ] = await db.select().from(sessions).where(eq(sessions.sessionUuid, sessionUuid)).execute()

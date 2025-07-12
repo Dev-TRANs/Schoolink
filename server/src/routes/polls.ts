@@ -27,7 +27,7 @@ app.get("/", zValidator('query', z.object({
 }).partial()), async (c) => {
     const { userId } = c.req.valid('query')
     const db = drizzle(c.env.DB)
-    let projectsBaseObject
+    let pollsBaseObject
     if (userId) {
         const [user] = await db.select().from(users).where(eq(users.userId, userId))
         if (!user) {
@@ -37,23 +37,23 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        projectsBaseObject = await db.select().from(projects).where(and(eq(projects.membershipUuid, membership.membershipUuid), eq(projects.isValid, 1)))
+        pollsBaseObject = await db.select().from(polls).where(and(eq(polls.membershipUuid, membership.membershipUuid), eq(polls.isValid, 1)))
     } else {
-        projectsBaseObject = await db.select().from(projects).where(eq(projects.isValid, 1))
+        pollsBaseObject = await db.select().from(polls).where(eq(polls.isValid, 1))
     }
-    const projectsObject = await Promise.all(projectsBaseObject.map(async (project) => {
-        const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
-        const [projectUser] = await db.select().from(users).where(eq(users.userUuid, projectMembership.userUuid))
-        const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, projectMembership.userUuid))
-        const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, projectMembership.organizationUuid))
-        const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, projectMembership.organizationUuid))
+    const pollsObject = await Promise.all(pollsBaseObject.map(async (poll) => {
+        const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
+        const [pollUser] = await db.select().from(users).where(eq(users.userUuid, pollMembership.userUuid))
+        const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, pollMembership.userUuid))
+        const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, pollMembership.organizationUuid))
+        const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, pollMembership.organizationUuid))
         const data = {
-            projectId: project.projectId,
-            title: project.title,
-            description: project.description,
-            buttons: project.buttons,
-            thumbnail: project.thumbnail,
-            userId: projectUser.userId,
+            pollId: poll.pollId,
+            title: poll.title,
+            description: poll.description,
+            choices: poll.choices,
+            thumbnail: poll.thumbnail,
+            userId: pollUser.userId,
             userDisplayName: userProfile.displayName,
             userAvatar: userProfile.avatar,
             organizationId: organization.organizationId,
@@ -63,31 +63,38 @@ app.get("/", zValidator('query', z.object({
         return data
     }))
     return c.json(
-        { success: true, data: projectsObject }
+        { success: true, data: pollsObject }
     )
 })
 
-app.get('/:project_id', async (c) => {
-    const projectId = c.req.param('project_id')
+app.get('/:poll_id', async (c) => {
+    const pollId = c.req.param('poll_id')
     const db = drizzle(c.env.DB)
-    const [project] = await db.select().from(projects).where(eq(projects.projectId, projectId))
-    if (!project) {
+    const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
+    if (!poll) {
         return c.json(
-            { success: false, message: "Project not found" },
+            { success: false, message: "Interaction not found" },
             404,
         );
     }
-    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
+    const [membership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
     const [user] = await db.select().from(users).where(eq(users.userUuid, membership.userUuid))
     const [userProfile] = await db.select().from(profiles).where(eq(profiles.userUuid, membership.userUuid))
     const [organization] = await db.select().from(organizations).where(eq(organizations.organizationUuid, membership.organizationUuid))
     const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, membership.organizationUuid))
+    const pollVotes = await db.select().from(votes).where(eq(votes.pollUuid, poll.pollUuid))
+    const pollChoices = Object.entries(
+        pollVotes.reduce<Record<string, number>>((acc, pollVote) => {
+          acc[pollVote.choiceName] = (acc[pollVote.choiceName] || 0) + 1;
+          return acc;
+        }, {})
+      ).map(([name, count]) => ({ name, count }))
     const data = {
-        projectId: project.projectId,
-        title: project.title,
-        description: project.description,
-        buttons: project.buttons,
-        thumbnail: project.thumbnail,
+        pollId: poll.pollId,
+        title: poll.title,
+        description: poll.description,
+        pollChoices: pollChoices,
+        thumbnail: poll.thumbnail,
         userId: user.userId,
         userDisplayName: userProfile.displayName,
         userAvatar: userProfile.avatar,
@@ -100,6 +107,55 @@ app.get('/:project_id', async (c) => {
     )
 })
 
+app.post('/:poll_id/vote', zValidator('json', z.object({
+    choiceName: z.string(),
+    sessionUuid: z.string().optional(),
+    guestUuid: z.string().optional()
+})), async(c) => {
+    const { choiceName, guestUuid } = c.req.valid('json')
+    const pollId = c.req.param('poll_id')
+    if (!choiceName) {
+        return c.json(
+            { success: false, message: "Choice Name is required" },
+            400,
+        )
+    }
+    const userUuid = c.get("session")?.userUuid || guestUuid
+    if (!userUuid) {
+        return c.json(
+            { success: false, message: "Session Uuid is required" },
+            400,
+        )
+    }
+    const db = drizzle(c.env.DB)
+    const [user] = await db.select().from(users).where(eq(users.userUuid, userUuid))
+    const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
+    if (!poll) {
+        return c.json(
+            { success: false, message: "Interaction not found" },
+            404,
+        );
+    }
+    const [vote] = await db.select().from(votes).where(and(eq(votes.pollUuid, poll.pollUuid), eq(votes.userUuid, userUuid)))
+    if (!vote) {
+        const voteData: typeof votes.$inferInsert = {
+            voteUuid: crypto.randomUUID(),
+            pollUuid: poll.pollUuid,
+            userUuid: userUuid,
+            isGuest: user ? 1 : 0,
+            choiceName: choiceName,
+        }
+        await db.insert(votes).values(voteData).execute()
+        return c.json(
+            { success: true },
+        )
+    }
+    await db.update(votes).set({choiceName: choiceName}).where(and(eq(votes.pollUuid, poll.pollUuid), eq(votes.userUuid, userUuid))).execute()
+    return c.json(
+        { success: true }
+    )
+})
+
 app.use('/', checkOrgMembership("member"))
 
 app.post('/', zValidator('form', z.object({
@@ -107,18 +163,15 @@ app.post('/', zValidator('form', z.object({
     organizationId: z.string(),
     title: z.string(),
     description: z.string(),
-    buttons: z.string()
+    choices: z.string()
         .transform((str) => JSON.parse(str))
-        .pipe(z.object({
-            content: z.string(),
-            url: z.string()
-        }).array()),
+        .pipe(z.string().array().nonempty()),
     thumbnail: z.instanceof(File)
 }).partial({
     description: true,
     thumbnail: true
 })), async (c) => {
-    const { title, description, buttons, thumbnail } = await c.req.parseBody();
+    const { title, description, choices, thumbnail } = await c.req.parseBody();
     const db = drizzle(c.env.DB)
     const membership = c.get("membership")
     const forwardFormData = new FormData();
@@ -146,45 +199,42 @@ app.post('/', zValidator('form', z.object({
         }
         url = data.url
     }
-    const project: typeof projects.$inferInsert = {
-        projectUuid: crypto.randomUUID(),
-        projectId: generateId(),
+    const poll: typeof polls.$inferInsert = {
+        pollUuid: crypto.randomUUID(),
+        pollId: generateId(),
         membershipUuid: membership.membershipUuid,
         title: title as string,
         description: description as string,
-        buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
+        choices: JSON.parse(choices as string) as Array<string>,
         thumbnail: url,
     }
-    await db.insert(projects).values(project).execute()
+    await db.insert(polls).values(poll).execute()
     return c.json(
-        { success: true, projectId: project.projectId },
+        { success: true, pollId: poll.pollId },
     )
 })
 
-app.put('/:project_id', zValidator('form', z.object({
+app.put('/:poll_id', zValidator('form', z.object({
     sessionUuid: z.string(),
     title: z.string(),
     description: z.string(),
-    buttons: z.string()
+    choices: z.string()
         .transform((str) => JSON.parse(str))
-        .pipe(z.object({
-            content: z.string(),
-            url: z.string()
-        }).array()),
+        .pipe(z.string().array()),
     thumbnail: z.instanceof(File)
 }).partial({
     title: true,
     description: true,
-    buttons: true,
+    choices: true,
     thumbnail: true
 })), async (c) => {
-    const { title, description, buttons, thumbnail } = await c.req.parseBody();
-    const projectId = c.req.param("project_id")
+    const { title, description, choices, thumbnail } = await c.req.parseBody();
+    const pollId = c.req.param("poll_id")
     const db = drizzle(c.env.DB)
     const session = c.get("session")
-    const [project] = await db.select().from(projects).where(eq(projects.projectId, projectId))
-    const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
-    if (projectMembership.userUuid != session.userUuid) {
+    const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
+    const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
+    if (pollMembership.userUuid != session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
@@ -218,34 +268,34 @@ app.put('/:project_id', zValidator('form', z.object({
     const newDetail = {
         title: title,
         description: description,
-        buttons: JSON.parse(buttons as string) as Array<{ content: string, url: string }>,
+        choices: JSON.parse(choices as string) as Array<string>,
         thumbnail: url,
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedDetail = Object.fromEntries(
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
-    await db.update(projects).set(updatedDetail).where(eq(projects.projectId, projectId)).execute()
+    await db.update(polls).set(updatedDetail).where(eq(polls.pollId, pollId)).execute()
     return c.json(
         { success: true }
     )
 })
 
-app.put('/:project_id/is_valid', zValidator('json', z.object({
+app.put('/:poll_id/is_valid', zValidator('json', z.object({
     sessionUuid: z.string(),
 })), async(c) => {
     const db = drizzle(c.env.DB)
-    const projectId = c.req.param("project_id")
+    const pollId = c.req.param("poll_id")
     const session = c.get("session")
-    const [project] = await db.select().from(projects).where(eq(projects.projectId, projectId))
-    const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))
-    if (projectMembership.userUuid != session.userUuid) {
+    const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
+    const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
+    if (pollMembership.userUuid != session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
         )
     }
-    await db.update(projects).set({isValid: (project.isValid ? 0 : 1)}).where(eq(projects.projectId, projectId)).execute()
+    await db.update(polls).set({isValid: (poll.isValid ? 0 : 1)}).where(eq(polls.pollId, pollId)).execute()
     return c.json(
         { success: true }
     )

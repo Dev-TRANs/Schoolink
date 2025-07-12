@@ -1,7 +1,7 @@
 import { Context, Next, MiddlewareHandler } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 
 type Env = {

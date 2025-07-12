@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import routes from './routes';
 import { sessionChecker } from './middlewares/auth'
-import { organizations, users, memberships, profiles, sessions, projects, events, matchings } from "./db/schema"
+import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "./db/schema"
 import { cors } from 'hono/cors'
 
 type Env = {
@@ -41,7 +41,11 @@ app.use("*", async (c: Context<Env>, next) => {
     if (c.req.path.startsWith('/auth/sign_in')) {
         return next()
     }
-    return sessionChecker(c, next)
+    let isGuestAllowed = false
+    if (c.req.path.endsWith('vote')) {
+        isGuestAllowed = true
+    }
+    return sessionChecker(isGuestAllowed)(c, next)
 })
 
 app.route('/', routes);

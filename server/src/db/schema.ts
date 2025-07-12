@@ -135,3 +135,37 @@ export const interactions = sqliteTable('interactions',
 		index("idx_interactions_membership_uuid").on(table.membershipUuid),
 	]
 );
+
+export const polls = sqliteTable('polls', 
+	{
+		pollUuid: text('poll_uuid').primaryKey(),
+		pollId: text('poll_id').unique().notNull(),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		title: text('title').notNull(),
+		description: text('description'),
+		choices: text('choices', { mode: "json" }).notNull().$type<Array<string>>(),
+		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
+		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_polls_membership_uuid").on(table.membershipUuid),
+	]
+)
+
+export const votes = sqliteTable('votes', 
+	{
+		voteUuid: text('vote_uuid').primaryKey(),
+		pollUuid: text('poll_uuid').notNull().references(() => polls.pollUuid),
+		userUuid: text('user_uuid').notNull(),
+		isGuest: integer('is_guest').notNull().default(1).$type<0|1>(),
+		choiceName: text('choice_name').notNull(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_votes_poll_uuid").on(table.pollUuid),
+		index("idx_votes_user_uuid").on(table.userUuid),
+	]
+) 
