@@ -62,7 +62,7 @@
   </script>
   
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
-    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/polls">＜ 交流会</a>
+    <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/polls">＜ 投票</a>
     <h1 class="text-3xl font-bold text-cente mt-8">新規作成</h1>
     <form on:submit|preventDefault={handleSubmit} class="mt-5 w-full" bind:this={formElement}>
       <ImgField
