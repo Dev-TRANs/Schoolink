@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import routes from './routes';
 import { sessionChecker } from './middlewares/auth'
-import { organizations, users, memberships, profiles, sessions, projects, events, interactions } from "./db/schema"
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "./db/schema"
 import { cors } from 'hono/cors'
 
 type Env = {
