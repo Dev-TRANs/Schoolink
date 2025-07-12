@@ -144,7 +144,7 @@ app.post('/:poll_id/vote', zValidator('json', z.object({
             { success: true },
         )
     }
-    await db.update(votes).set({choiceName: choiceName}).where(and(eq(votes.pollUuid, poll.pollUuid), eq(votes.userUuid, userUuid))).execute()
+    await db.update(votes).set({choiceName: choiceName, updatedAt: Math.floor(Date.now() / 1000)}).where(and(eq(votes.pollUuid, poll.pollUuid), eq(votes.userUuid, userUuid))).execute()
     return c.json(
         { success: true }
     )
