@@ -1,6 +1,6 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
-import { eq, or, and } from "drizzle-orm";
+import { eq, or, and, desc } from "drizzle-orm";
 import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
@@ -37,9 +37,9 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        projectsBaseObject = await db.select().from(projects).where(and(eq(projects.membershipUuid, membership.membershipUuid), eq(projects.isValid, 1)))
+        projectsBaseObject = await db.select().from(projects).orderBy(desc(projects.createdAt)).where(and(eq(projects.membershipUuid, membership.membershipUuid), eq(projects.isValid, 1)))
     } else {
-        projectsBaseObject = await db.select().from(projects).where(eq(projects.isValid, 1))
+        projectsBaseObject = await db.select().from(projects).orderBy(desc(projects.createdAt)).where(eq(projects.isValid, 1))
     }
     const projectsObject = await Promise.all(projectsBaseObject.map(async (project) => {
         const [projectMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, project.membershipUuid))

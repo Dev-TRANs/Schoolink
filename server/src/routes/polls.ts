@@ -1,6 +1,6 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
-import { eq, or, and } from "drizzle-orm";
+import { eq, or, and, desc } from "drizzle-orm";
 import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
@@ -37,9 +37,9 @@ app.get("/", zValidator('query', z.object({
             );
         }
         const [membership] = await db.select().from(memberships).where(eq(memberships.userUuid, user.userUuid))
-        pollsBaseObject = await db.select().from(polls).where(and(eq(polls.membershipUuid, membership.membershipUuid), eq(polls.isValid, 1)))
+        pollsBaseObject = await db.select().from(polls).orderBy(desc(polls.createdAt)).where(and(eq(polls.membershipUuid, membership.membershipUuid), eq(polls.isValid, 1)))
     } else {
-        pollsBaseObject = await db.select().from(polls).where(eq(polls.isValid, 1))
+        pollsBaseObject = await db.select().from(polls).orderBy(desc(polls.createdAt)).where(eq(polls.isValid, 1))
     }
     const pollsObject = await Promise.all(pollsBaseObject.map(async (poll) => {
         const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
