@@ -64,13 +64,13 @@
        {#each filteredPolls as poll}
          <a href={`/polls/${poll.pollId}`}>
            <div>
-             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 border border-gray-500 border-1" src={poll.thumbnail} alt="thumbnail" />
+             <img class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 aspect-4/3 border border-gray-500 border-1" src={poll.thumbnail} alt="thumbnail" loading="lazy"/>
              <p class="text-xl w-full text-left mt-2 truncate">{poll.title}</p>
              <div class="flex items-center gap-1 mt-2">
-               <img src={poll.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+               <img src={poll.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
                <p class="text-sm">{poll.userDisplayName}</p>
                <p class="text-gray-500 text-sm">in</p>
-               <img src={poll.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+               <img src={poll.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
                <p class="text-sm truncate">{poll.organizationDisplayName}</p>
              </div>
            </div>

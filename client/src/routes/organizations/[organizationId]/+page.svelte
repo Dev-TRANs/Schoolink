@@ -19,7 +19,7 @@
 {#if organization}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
-        <img class="rounded-full border border-gray-500 aspect-square w-32 h-32 mx-auto sm:mx-0" src={organization.avatar} alt="avatar" />
+        <img class="rounded-full border border-gray-500 aspect-square w-32 h-32 mx-auto sm:mx-0" src={organization.avatar} alt="avatar" loading="lazy"/>
         <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <p class="text-3xl font-bold">{organization.displayName}</p>
             <p class="text-gray-500 text-md">ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{organization.organizationId}</span></p>
@@ -48,7 +48,7 @@
             {#each organization.users as user}
             <a href="/users/{user.userId}" class="block hover:bg-gray-50 transition rounded-lg border border-gray-200 p-4">
                 <div class="flex items-center gap-4">
-                    <img src={user.avatar} alt="avatar" class="size-12 sm:size-14 rounded-full border border-gray-400" />
+                    <img src={user.avatar} alt="avatar" class="size-12 sm:size-14 rounded-full border border-gray-400" loading="lazy"/>
                     <div class="flex flex-wrap items-center gap-2 text-lg sm:text-xl font-semibold">
                         {#if user.role === "admin"}
                         <span class="material-symbols-outlined text-yellow-500 text-2xl">crown</span>

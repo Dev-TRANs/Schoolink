@@ -222,6 +222,7 @@
       src={preview || src} 
       class="w-full h-full object-cover border {showError && error ? 'border-red-500' : 'border-gray-300'} shadow-sm" 
       alt="Preview"
+      loading="lazy"
     >
     {#if !disabled}
       <button

@@ -42,20 +42,20 @@
         <h1 class="text-3xl font-bold text-cente mt-8">{event.title}</h1>
         <div class="flex items-center gap-1 mt-2">
             <a href="/users/{event.userId}">
-                <img src={event.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+                <img src={event.userAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
             </a>
             <a href="/users/{event.userId}">
                 <p class="text-sm hover:underline">{event.userDisplayName}</p>
             </a>
             <p class="text-gray-500 text-sm">in</p>
             <a href="/organizations/{event.organizationId}">
-                <img src={event.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+                <img src={event.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
             </a>
             <a href="/organizations/{event.organizationId}">
                 <p class="text-sm truncate hover:underline">{event.organizationDisplayName}</p>
             </a>
         </div>
-        <img src={event.thumbnail} class="rounded-2xl mt-5 w-full aspect-4/3" alt="thumbnail"/>
+        <img src={event.thumbnail} class="rounded-2xl mt-5 w-full aspect-4/3" alt="thumbnail" loading="lazy"/>
         {#if event.description}
         <div class="w-full bg-slate-300 mt-8 rounded-2xl p-5 whitespace-pre-line">
             {event.description}

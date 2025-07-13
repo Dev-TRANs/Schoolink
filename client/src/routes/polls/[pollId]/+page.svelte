@@ -84,18 +84,18 @@
 
         <div class="flex items-center gap-1 mt-2">
             <a href={`/users/${poll.userId}`}>
-                <img src={poll.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full" />
+                <img src={poll.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full" loading="lazy"/>
             </a>
             <a href={`/users/${poll.userId}`} class="text-sm hover:underline">{poll.userDisplayName}</a>
             <p class="text-gray-500 text-sm">in</p>
             <a href={`/organizations/${poll.organizationId}`}>
-                <img src={poll.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md" />
+                <img src={poll.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md" loading="lazy"/>
             </a>
             <a href={`/organizations/${poll.organizationId}`} class="text-sm hover:underline">{poll.organizationDisplayName}</a>
         </div>
 
         {#if poll.thumbnail}
-            <img src={poll.thumbnail} class="rounded-2xl mt-5 w-full aspect-[4/3]" alt="thumbnail"/>
+            <img src={poll.thumbnail} class="rounded-2xl mt-5 w-full aspect-[4/3]" alt="thumbnail" loading="lazy"/>
         {/if}
 
         {#if poll.description}

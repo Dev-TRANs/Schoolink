@@ -38,7 +38,7 @@
 {#if user}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
-        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" />
+        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" loading="lazy"/>
         <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <a href="/users/{user.userId}">
                 <p class="text-3xl font-bold hover:underline">{user.displayName}</p>
@@ -91,10 +91,10 @@
     <div class="w-full mt-10 flex flex-col items-center gap-5">
         <p class="text-center text-3xl font-bold font-AllertaStencil">Project Schoolink</p>
         <a href="https://seitokaishinko.org/" target="_blank" rel="noopener noreferrer">
-            <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" >
+            <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" loading="lazy">
         </a>
         <a href="https://trans.stki.org/" target="_blank" rel="noopener noreferrer">
-            <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" >
+            <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" loading="lazy">
         </a>
     </div>
 </div>

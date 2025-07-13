@@ -98,7 +98,7 @@
         {#if user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
             <a href="/users/{user.userId}">
-                <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" />
+                <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
             </a>
             <a href="/users/{user.userId}">
                 <p class="text-sm hover:underline">{user.displayName}</p>
@@ -107,7 +107,7 @@
         </div>
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
             <a href="/organizations/{user.organizationId}">
-                <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" />
+                <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
             </a>
             <a href="/organizations/{user.organizationId}">
                 <p class="text-sm truncate hover:underline">{user.organizationDisplayName}</p>

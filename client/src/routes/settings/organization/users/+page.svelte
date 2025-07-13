@@ -182,7 +182,7 @@
     <p class="w-full text-center text-2xl underline mt-5">ユーザー管理</p>
     {#each organization.users as user}
         <div class="grid grid-cols-6 gap-10 mt-5 ">
-            <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square my-auto" src={user.avatar} alt="avatar" />
+            <img class="rounded-full w-full m-3 border border-gray-500 border-1 rounded-full aspect-square my-auto" src={user.avatar} alt="avatar" loading="lazy"/>
             <div class="col-span-3 text-2xl font-bold flex items-center gap-1">
                 {#if user.role === "admin"}
                 <p class="material-symbols-outlined">

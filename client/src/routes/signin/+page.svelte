@@ -99,10 +99,10 @@
     <div class="w-full mt-10 flex flex-col items-center gap-5">
       <p class="text-center text-3xl font-bold font-AllertaStencil">Project Schoolink</p>
       <a href="https://seitokaishinko.org/" target="_blank" rel="noopener noreferrer">
-          <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" >
+          <img src="/img/logo/seitokaishinko.png" alt="生徒会活動振興会" class="max-w-60" loading="lazy">
       </a>
       <a href="https://trans.stki.org/" target="_blank" rel="noopener noreferrer">
-          <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" >
+          <img src="/img/logo/trans.svg" alt="TRANs - 生徒会情報機構" class="max-w-30" loading="lazy">
       </a>
   </div>
 </div>

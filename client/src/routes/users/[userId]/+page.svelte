@@ -34,7 +34,7 @@
 {#if user}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
-        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" />
+        <img class="rounded-full border border-gray-400 aspect-square w-32 h-32 mx-auto sm:mx-0" src={user.avatar} alt="avatar" loading="lazy"/>
         <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <p class="text-3xl font-bold">{user.displayName}</p>
             <p class="text-gray-500 text-md">
@@ -82,13 +82,14 @@
                         class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200 border border-gray-500"
                         src={item.thumbnail}
                         alt="thumbnail"
+                        loading="lazy"
                     />
                     <p class="text-xl w-full text-left mt-2 truncate">{item.title}</p>
                     <div class="flex items-center gap-1 mt-2">
-                        <img src={item.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" />
+                        <img src={item.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" loading="lazy"/>
                         <p class="text-sm">{item.userDisplayName}</p>
                         <p class="text-gray-500 text-sm">in</p>
-                        <img src={item.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" />
+                        <img src={item.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" loading="lazy"/>
                         <p class="text-sm truncate">{item.organizationDisplayName}</p>
                     </div>
                 </div>
