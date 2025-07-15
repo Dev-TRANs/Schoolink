@@ -1,7 +1,7 @@
 <div class="w-4/5 mx-auto">
     <p class="text-normal md:text-xl text-center">つながる学生のためのプラットフォーム</p>
     <p class="text-6xl md:text-8xl font-bold font-AllertaStencil mt-4 text-center">Schoolink</p>
-    <p class="mt-5">Schoolinkは、<a href="https://www.seitokaishinko.org" class="underline">生徒会活動振興会</a>と<a href="https://www.stki.org" class="underline">生徒会情報機構（TRANs）</a>が共同開発する、生徒会団体、学生団体、生徒会のためのプラットフォームです。</p>
+    <p class="mt-5">Schoolinkは、<a href="https://www.seitokaishinko.org" class="underline">生徒会活動振興会</a>と<a href="https://trans.stki.org" class="underline">生徒会情報機構（TRANs）</a>が共同開発する、生徒会団体、学生団体、生徒会のためのプラットフォームです。</p>
     <div class="text-2xl mt-15 flex justify-center items-center text-center py-2 rounded-r-xl">
         <span class="material-symbols-outlined mr-1 text-blue-600">public</span>
         プロジェクト
