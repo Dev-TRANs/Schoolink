@@ -43,7 +43,10 @@
 </script>
 
 <div class="mx-5">
-  <h1 class="text-4xl font-bold">イベント</h1>
+  <p class="text-normal">
+      <a href="/about" class="underline text-sky-600">つながる学生のためのプラットフォーム、Schoolinkを知る→</a>
+     </p>
+  <h1 class="mt-3 text-4xl font-bold">イベント</h1>
   <input
     class="bg-gray-200 h-10 w-full mt-4 rounded-xl p-4"
     placeholder="イベントを検索…"
