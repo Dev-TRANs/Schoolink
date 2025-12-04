@@ -59,13 +59,6 @@
       "breakpoints": true
     },
     {
-      "idx": 8,
-      "version": "6",
-      "when": 1764835228964,
-      "tag": "0008_black_thor",
-      "breakpoints": true
-    },
-    {
       "idx": 9,
       "version": "6",
       "when": 1764836451488,
@@ -84,6 +77,13 @@
       "version": "6",
       "when": 1764839388838,
       "tag": "0011_brown_mariko_yashida",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1764859464696,
+      "tag": "0012_friendly_angel",
       "breakpoints": true
     }
   ]

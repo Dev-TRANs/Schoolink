@@ -174,6 +174,7 @@ export const questions = sqliteTable('questions',
 		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
 		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
+		bestCommentUuid: text('best_comment').references(() => comments.commentUuid),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
@@ -236,5 +237,18 @@ export const notifications = sqliteTable('notifications',
 	},
 	(table) => [
 		index("idx_notifications_membership_uuid").on(table.membershipUuid),
+	]
+)
+
+export const subscriptions = sqliteTable('subscriptions', 
+	{
+		subscriptionUuid: text('notification_uuid').primaryKey(),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_subscriptions_membership_uuid").on(table.membershipUuid),
+		uniqueIndex('uniq_membership_post').on(table.membershipUuid, table.postUuid),
 	]
 )
