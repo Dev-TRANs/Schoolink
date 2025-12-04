@@ -57,6 +57,27 @@
       "when": 1752336933398,
       "tag": "0007_open_jazinda",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1764835228964,
+      "tag": "0008_black_thor",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1764836451488,
+      "tag": "0009_amusing_major_mapleleaf",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1764836935128,
+      "tag": "0010_needy_star_brand",
+      "breakpoints": true
     }
   ]
 }

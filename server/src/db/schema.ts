@@ -225,7 +225,7 @@ export const replies = sqliteTable('reqlies',
 	]
 )
 
-export const notifications = sqliteTable('notification', 
+export const notifications = sqliteTable('notifications', 
 	{
 		notificationUuid: text('notification_uuid').primaryKey(),
 		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
