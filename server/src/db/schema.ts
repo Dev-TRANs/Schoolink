@@ -6,7 +6,10 @@ export const organizations = sqliteTable('organizations',
 		organizationUuid: text('organization_uuid').primaryKey(),
 		organizationId: text('organization_id').unique().notNull(),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
-	}
+	},
+	(table) => [
+		index("idx_organizations_organization_id").on(table.organizationId),
+	]
 );
 
 export const users = sqliteTable('users', 
@@ -17,7 +20,10 @@ export const users = sqliteTable('users',
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
 		isFrozen: integer('is_frozen').notNull().default(0).$type<0|1>(),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
-	}
+	},
+	(table) => [
+		index("idx_users_user_id").on(table.userId),
+	]
 );
 
 // Users - Organizations Junction Table
@@ -88,11 +94,13 @@ export const projects = sqliteTable('projects',
 		buttons: text('buttons', { mode: "json" }).notNull().$type<Array<{ content: string; url: string }>>(),
 		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
 	(table) => [
 		index("idx_projects_membership_uuid").on(table.membershipUuid),
+		index("idx_projects_project_id").on(table.projectId),
 	]
 );
 
@@ -109,11 +117,13 @@ export const events = sqliteTable('events',
 		endAt: integer('end_at').notNull(),
 		place: text('place').notNull(),
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
 	(table) => [
 		index("idx_events_membership_uuid").on(table.membershipUuid),
+		index("idx_events_event_id").on(table.eventId),
 		check("event_dates_check", sql`${table.endAt} > ${table.startAt}`)
 	]
 );
@@ -128,11 +138,13 @@ export const polls = sqliteTable('polls',
 		choices: text('choices', { mode: "json" }).notNull().$type<Array<string>>(),
 		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
 	(table) => [
 		index("idx_polls_membership_uuid").on(table.membershipUuid),
+		index("idx_polls_poll_id").on(table.pollId),
 	]
 )
 
@@ -151,3 +163,78 @@ export const votes = sqliteTable('votes',
 		index("idx_votes_user_uuid").on(table.userUuid),
 	]
 ) 
+
+export const questions = sqliteTable('questions', 
+	{
+		questionUuid: text('question_uuid').primaryKey(),
+		questionId: text('question_id').unique().notNull(),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		title: text('title').notNull(),
+		description: text('description'),
+		thumbnail: text('thumbnail').notNull().default("/img/default/thumbnail.png"),
+		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_questions_membership_uuid").on(table.membershipUuid),
+		index("idx_questions_question_id").on(table.questionId),
+	]
+)
+
+export const posts = sqliteTable('posts', 
+	{
+		postUuid: text('post_uuid').primaryKey(),
+		postType: text("post_type").notNull().$type<"project" | "event" | "poll" | "question">(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	}
+)
+
+export const comments = sqliteTable('comments', 
+	{
+		commentUuid: text('comment_uuid').primaryKey(),
+		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		content: text('content').notNull(),
+		isAccepted: integer('is_accepted').notNull().default(0).$type<0|1>(),
+		isValid: integer('is_accepted').notNull().default(1).$type<0|1>(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_comments_membership_uuid").on(table.membershipUuid),
+		index("idx_comments_post_uuid").on(table.postUuid),
+	]
+)
+
+export const replies = sqliteTable('reqlies', 
+	{
+		replyUuid: text('reply_uuid').primaryKey(),
+		commentUuid: text('comment_uuid').notNull().references(() => comments.commentUuid),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		content: text('content').notNull(),
+		isValid: integer('is_accepted').notNull().default(1).$type<0|1>(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_replies_membership_uuid").on(table.membershipUuid),
+		index("idx_replies_comment_uuid").on(table.commentUuid),
+	]
+)
+
+export const notifications = sqliteTable('notification', 
+	{
+		notificationUuid: text('notification_uuid').primaryKey(),
+		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		content: text('content').notNull(),
+		href: text('href'),
+		isOpened: integer('is_accepted').notNull().default(0).$type<0|1>(),
+		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+	},
+	(table) => [
+		index("idx_notifications_membership_uuid").on(table.membershipUuid),
+	]
+)

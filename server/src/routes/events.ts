@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and, desc } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes, posts } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -155,6 +155,12 @@ app.post('/', zValidator('form', z.object({
         }
         url = data.url
     }
+    const postUuid = crypto.randomUUID()
+    const post: typeof posts.$inferInsert = {
+        postUuid: postUuid,
+        postType: "event"
+    }
+    await db.insert(posts).values(post).execute()
     const event: typeof events.$inferInsert = {
         eventUuid: crypto.randomUUID(),
         eventId: generateId(),
@@ -165,7 +171,8 @@ app.post('/', zValidator('form', z.object({
         thumbnail: url,
         startAt: Number(startAt),
         endAt: Number(endAt),
-        place: place as string
+        place: place as string,
+        postUuid: postUuid
     }
     await db.insert(events).values(event).execute()
     return c.json(
