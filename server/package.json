@@ -7,6 +7,7 @@
 	},
 	"dependencies": {
 		"@hono/zod-validator": "^0.4.3",
+		"better-sqlite3": "^12.5.0",
 		"drizzle-kit": "^0.30.6",
 		"drizzle-orm": "^0.41.0",
 		"hono": "^4.7.5",
@@ -14,6 +15,6 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250327.0",
-		"wrangler": "^4.6.0"
+		"wrangler": "^4.53.0"
 	}
 }

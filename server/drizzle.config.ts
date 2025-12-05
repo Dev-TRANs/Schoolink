@@ -5,5 +5,5 @@ export default defineConfig({
 	out: "./src/db/migrations",
 	verbose: true,
 	strict: true,
-	dialect: 'sqlite'
+	dialect: 'sqlite',
 });

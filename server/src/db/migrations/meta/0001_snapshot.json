@@ -1,9 +1,121 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "dad7694f-6b29-4582-80b0-ca4fead6cd72",
-  "prevId": "dfc71a4c-892b-4bfb-bad8-57d7e229512f",
+  "id": "77130ebd-3a8c-47ee-80a5-a2cd23ab3fbf",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "comments": {
+      "name": "comments",
+      "columns": {
+        "comment_uuid": {
+          "name": "comment_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_accepted": {
+          "name": "is_accepted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "idx_comments_membership_uuid": {
+          "name": "idx_comments_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        },
+        "idx_comments_post_uuid": {
+          "name": "idx_comments_post_uuid",
+          "columns": [
+            "post_uuid"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "comments_post_uuid_posts_post_uuid_fk": {
+          "name": "comments_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "comments",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "comments_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "comments_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "comments",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "events": {
       "name": "events",
       "columns": {
@@ -78,6 +190,21 @@
           "notNull": true,
           "autoincrement": false
         },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -109,6 +236,13 @@
             "membership_uuid"
           ],
           "isUnique": false
+        },
+        "idx_events_event_id": {
+          "name": "idx_events_event_id",
+          "columns": [
+            "event_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
@@ -124,6 +258,19 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "events_post_uuid_posts_post_uuid_fk": {
+          "name": "events_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "events",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -134,111 +281,6 @@
           "value": "\"events\".\"end_at\" > \"events\".\"start_at\""
         }
       }
-    },
-    "matchings": {
-      "name": "matchings",
-      "columns": {
-        "matching_uuid": {
-          "name": "matching_uuid",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "matching_id": {
-          "name": "matching_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "membership_uuid": {
-          "name": "membership_uuid",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "buttons": {
-          "name": "buttons",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "thumbnail": {
-          "name": "thumbnail",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'/img/default/thumbnail.png'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {
-        "matchings_matching_id_unique": {
-          "name": "matchings_matching_id_unique",
-          "columns": [
-            "matching_id"
-          ],
-          "isUnique": true
-        },
-        "idx_matchings_membership_uuid": {
-          "name": "idx_matchings_membership_uuid",
-          "columns": [
-            "membership_uuid"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {
-        "matchings_membership_uuid_memberships_membership_uuid_fk": {
-          "name": "matchings_membership_uuid_memberships_membership_uuid_fk",
-          "tableFrom": "matchings",
-          "tableTo": "memberships",
-          "columnsFrom": [
-            "membership_uuid"
-          ],
-          "columnsTo": [
-            "membership_uuid"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
     },
     "memberships": {
       "name": "memberships",
@@ -336,6 +378,82 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "notifications": {
+      "name": "notifications",
+      "columns": {
+        "notification_uuid": {
+          "name": "notification_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "href": {
+          "name": "href",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_accepted": {
+          "name": "is_accepted",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "idx_notifications_membership_uuid": {
+          "name": "idx_notifications_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "notifications_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "notifications_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "notifications",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "organizations": {
       "name": "organizations",
       "columns": {
@@ -369,8 +487,195 @@
             "organization_id"
           ],
           "isUnique": true
+        },
+        "idx_organizations_organization_id": {
+          "name": "idx_organizations_organization_id",
+          "columns": [
+            "organization_id"
+          ],
+          "isUnique": false
         }
       },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "polls": {
+      "name": "polls",
+      "columns": {
+        "poll_uuid": {
+          "name": "poll_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "poll_id": {
+          "name": "poll_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "choices": {
+          "name": "choices",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "thumbnail": {
+          "name": "thumbnail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'/img/default/thumbnail.png'"
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "polls_poll_id_unique": {
+          "name": "polls_poll_id_unique",
+          "columns": [
+            "poll_id"
+          ],
+          "isUnique": true
+        },
+        "idx_polls_membership_uuid": {
+          "name": "idx_polls_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        },
+        "idx_polls_poll_id": {
+          "name": "idx_polls_poll_id",
+          "columns": [
+            "poll_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "polls_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "polls_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "polls",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "polls_post_uuid_posts_post_uuid_fk": {
+          "name": "polls_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "polls",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "posts": {
+      "name": "posts",
+      "columns": {
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "post_type": {
+          "name": "post_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
@@ -565,6 +870,21 @@
           "autoincrement": false,
           "default": "'/img/default/thumbnail.png'"
         },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -596,12 +916,289 @@
             "membership_uuid"
           ],
           "isUnique": false
+        },
+        "idx_projects_project_id": {
+          "name": "idx_projects_project_id",
+          "columns": [
+            "project_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {
         "projects_membership_uuid_memberships_membership_uuid_fk": {
           "name": "projects_membership_uuid_memberships_membership_uuid_fk",
           "tableFrom": "projects",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "projects_post_uuid_posts_post_uuid_fk": {
+          "name": "projects_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "projects",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "questions": {
+      "name": "questions",
+      "columns": {
+        "question_uuid": {
+          "name": "question_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "question_id": {
+          "name": "question_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "thumbnail": {
+          "name": "thumbnail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'/img/default/thumbnail.png'"
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "best_comment": {
+          "name": "best_comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "questions_question_id_unique": {
+          "name": "questions_question_id_unique",
+          "columns": [
+            "question_id"
+          ],
+          "isUnique": true
+        },
+        "idx_questions_membership_uuid": {
+          "name": "idx_questions_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        },
+        "idx_questions_question_id": {
+          "name": "idx_questions_question_id",
+          "columns": [
+            "question_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "questions_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "questions_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "questions",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "questions_post_uuid_posts_post_uuid_fk": {
+          "name": "questions_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "questions",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "questions_best_comment_comments_comment_uuid_fk": {
+          "name": "questions_best_comment_comments_comment_uuid_fk",
+          "tableFrom": "questions",
+          "tableTo": "comments",
+          "columnsFrom": [
+            "best_comment"
+          ],
+          "columnsTo": [
+            "comment_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "reqlies": {
+      "name": "reqlies",
+      "columns": {
+        "reply_uuid": {
+          "name": "reply_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "comment_uuid": {
+          "name": "comment_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "idx_replies_membership_uuid": {
+          "name": "idx_replies_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        },
+        "idx_replies_comment_uuid": {
+          "name": "idx_replies_comment_uuid",
+          "columns": [
+            "comment_uuid"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "reqlies_comment_uuid_comments_comment_uuid_fk": {
+          "name": "reqlies_comment_uuid_comments_comment_uuid_fk",
+          "tableFrom": "reqlies",
+          "tableTo": "comments",
+          "columnsFrom": [
+            "comment_uuid"
+          ],
+          "columnsTo": [
+            "comment_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "reqlies_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "reqlies_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "reqlies",
           "tableTo": "memberships",
           "columnsFrom": [
             "membership_uuid"
@@ -708,6 +1305,88 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "subscriptions": {
+      "name": "subscriptions",
+      "columns": {
+        "notification_uuid": {
+          "name": "notification_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "membership_uuid": {
+          "name": "membership_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "post_uuid": {
+          "name": "post_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "idx_subscriptions_membership_uuid": {
+          "name": "idx_subscriptions_membership_uuid",
+          "columns": [
+            "membership_uuid"
+          ],
+          "isUnique": false
+        },
+        "uniq_membership_post": {
+          "name": "uniq_membership_post",
+          "columns": [
+            "membership_uuid",
+            "post_uuid"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "subscriptions_membership_uuid_memberships_membership_uuid_fk": {
+          "name": "subscriptions_membership_uuid_memberships_membership_uuid_fk",
+          "tableFrom": "subscriptions",
+          "tableTo": "memberships",
+          "columnsFrom": [
+            "membership_uuid"
+          ],
+          "columnsTo": [
+            "membership_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "subscriptions_post_uuid_posts_post_uuid_fk": {
+          "name": "subscriptions_post_uuid_posts_post_uuid_fk",
+          "tableFrom": "subscriptions",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "post_uuid"
+          ],
+          "columnsTo": [
+            "post_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "users": {
       "name": "users",
       "columns": {
@@ -764,9 +1443,107 @@
             "user_id"
           ],
           "isUnique": true
+        },
+        "idx_users_user_id": {
+          "name": "idx_users_user_id",
+          "columns": [
+            "user_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "votes": {
+      "name": "votes",
+      "columns": {
+        "vote_uuid": {
+          "name": "vote_uuid",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "poll_uuid": {
+          "name": "poll_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_uuid": {
+          "name": "user_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_guest": {
+          "name": "is_guest",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "choice_name": {
+          "name": "choice_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {
+        "idx_votes_poll_uuid": {
+          "name": "idx_votes_poll_uuid",
+          "columns": [
+            "poll_uuid"
+          ],
+          "isUnique": false
+        },
+        "idx_votes_user_uuid": {
+          "name": "idx_votes_user_uuid",
+          "columns": [
+            "user_uuid"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "votes_poll_uuid_polls_poll_uuid_fk": {
+          "name": "votes_poll_uuid_polls_poll_uuid_fk",
+          "tableFrom": "votes",
+          "tableTo": "polls",
+          "columnsFrom": [
+            "poll_uuid"
+          ],
+          "columnsTo": [
+            "poll_uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
