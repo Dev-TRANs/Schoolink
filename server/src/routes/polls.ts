@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and, desc } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes, posts } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes, questions, posts, comments, replies, notifications, subscriptions  } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
@@ -210,6 +210,12 @@ app.post('/', zValidator('form', z.object({
         postUuid: postUuid
     }
     await db.insert(polls).values(poll).execute()
+    const subscription: typeof subscriptions.$inferInsert = {
+        subscriptionUuid: crypto.randomUUID(),
+        userUuid: membership.userUuid,
+        postUuid: postUuid,
+    }
+    await db.insert(subscriptions).values(subscription).execute()
     return c.json(
         { success: true, pollId: poll.pollId },
     )
@@ -277,6 +283,14 @@ app.put('/:poll_id', zValidator('form', z.object({
         Object.entries(newDetail).filter(([_, value]) => value !== null)
     );
     await db.update(polls).set(updatedDetail).where(eq(polls.pollId, pollId)).execute()
+    const postsSubscriptions = await db.select().from(subscriptions).where(eq(subscriptions.postUuid, poll.postUuid))
+    const newNotifications: typeof notifications.$inferInsert[] = postsSubscriptions.map(postSubscription => ({
+        notificationUuid: crypto.randomUUID(),
+        userUuid: postSubscription.userUuid,
+        content: `投票:${poll.title}にあらたな変更がありました。`,
+        href: `/polls/${poll.pollId}`
+    }))
+    await db.insert(notifications).values(newNotifications).execute()
     return c.json(
         { success: true }
     )

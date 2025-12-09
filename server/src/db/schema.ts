@@ -199,7 +199,6 @@ export const comments = sqliteTable('comments',
 		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
 		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
 		content: text('content').notNull(),
-		isAccepted: integer('is_accepted').notNull().default(0).$type<0|1>(),
 		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
@@ -229,26 +228,28 @@ export const replies = sqliteTable('reqlies',
 export const notifications = sqliteTable('notifications', 
 	{
 		notificationUuid: text('notification_uuid').primaryKey(),
-		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		userUuid: text('user_uuid').notNull().references(() => users.userUuid),
 		content: text('content').notNull(),
 		href: text('href'),
 		isOpened: integer('is_accepted').notNull().default(0).$type<0|1>(),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
 	},
 	(table) => [
-		index("idx_notifications_membership_uuid").on(table.membershipUuid),
+		index("idx_notifications_membership_uuid").on(table.userUuid),
 	]
 )
 
 export const subscriptions = sqliteTable('subscriptions', 
 	{
 		subscriptionUuid: text('notification_uuid').primaryKey(),
-		membershipUuid: text('membership_uuid').notNull().references(() => memberships.membershipUuid),
+		userUuid: text('user_uuid').notNull().references(() => users.userUuid),
 		postUuid: text('post_uuid').notNull().references(() => posts.postUuid),
 		createdAt: integer('created_at').notNull().default(sql`(unixepoch())`),
+		isValid: integer('is_valid').notNull().default(1).$type<0|1>(),
 	},
 	(table) => [
-		index("idx_subscriptions_membership_uuid").on(table.membershipUuid),
-		uniqueIndex('uniq_membership_post').on(table.membershipUuid, table.postUuid),
+		index("idx_subscriptions_user_uuid").on(table.userUuid),
+		uniqueIndex('uniq_user_post').on(table.userUuid, table.postUuid),
 	]
 )

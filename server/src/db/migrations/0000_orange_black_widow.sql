@@ -3,7 +3,6 @@ CREATE TABLE `comments` (
 	`post_uuid` text NOT NULL,
 	`membership_uuid` text NOT NULL,
 	`content` text NOT NULL,
-	`is_accepted` integer DEFAULT 0 NOT NULL,
 	`is_valid` integer DEFAULT 1 NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
 	`updated_at` integer DEFAULT (unixepoch()) NOT NULL,
@@ -51,15 +50,16 @@ CREATE INDEX `idx_memberships_user_uuid` ON `memberships` (`user_uuid`);--> stat
 CREATE INDEX `idx_memberships_organization_uuid` ON `memberships` (`organization_uuid`);--> statement-breakpoint
 CREATE TABLE `notifications` (
 	`notification_uuid` text PRIMARY KEY NOT NULL,
-	`membership_uuid` text NOT NULL,
+	`user_uuid` text NOT NULL,
 	`content` text NOT NULL,
 	`href` text,
 	`is_accepted` integer DEFAULT 0 NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`membership_uuid`) REFERENCES `memberships`(`membership_uuid`) ON UPDATE no action ON DELETE no action
+	`is_valid` integer DEFAULT 1 NOT NULL,
+	FOREIGN KEY (`user_uuid`) REFERENCES `users`(`user_uuid`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE INDEX `idx_notifications_membership_uuid` ON `notifications` (`membership_uuid`);--> statement-breakpoint
+CREATE INDEX `idx_notifications_membership_uuid` ON `notifications` (`user_uuid`);--> statement-breakpoint
 CREATE TABLE `organizations` (
 	`organization_uuid` text PRIMARY KEY NOT NULL,
 	`organization_id` text NOT NULL,
@@ -185,15 +185,16 @@ CREATE TABLE `sessions` (
 CREATE INDEX `idx_sessions_user_uuid` ON `sessions` (`user_uuid`);--> statement-breakpoint
 CREATE TABLE `subscriptions` (
 	`notification_uuid` text PRIMARY KEY NOT NULL,
-	`membership_uuid` text NOT NULL,
+	`user_uuid` text NOT NULL,
 	`post_uuid` text NOT NULL,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL,
-	FOREIGN KEY (`membership_uuid`) REFERENCES `memberships`(`membership_uuid`) ON UPDATE no action ON DELETE no action,
+	`is_valid` integer DEFAULT 1 NOT NULL,
+	FOREIGN KEY (`user_uuid`) REFERENCES `users`(`user_uuid`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`post_uuid`) REFERENCES `posts`(`post_uuid`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-CREATE INDEX `idx_subscriptions_membership_uuid` ON `subscriptions` (`membership_uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `uniq_membership_post` ON `subscriptions` (`membership_uuid`,`post_uuid`);--> statement-breakpoint
+CREATE INDEX `idx_subscriptions_user_uuid` ON `subscriptions` (`user_uuid`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uniq_user_post` ON `subscriptions` (`user_uuid`,`post_uuid`);--> statement-breakpoint
 CREATE TABLE `users` (
 	`user_uuid` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,

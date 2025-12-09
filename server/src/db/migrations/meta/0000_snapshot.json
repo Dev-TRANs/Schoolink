@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ca0eba29-c7df-438d-9547-ee5fd97c8292",
+  "id": "abdcc195-c59f-4b97-accf-3e220f7ec02c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comments": {
@@ -34,14 +34,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "is_accepted": {
-          "name": "is_accepted",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 0
         },
         "is_valid": {
           "name": "is_valid",
@@ -388,8 +380,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "membership_uuid": {
-          "name": "membership_uuid",
+        "user_uuid": {
+          "name": "user_uuid",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -424,27 +416,35 @@
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
         }
       },
       "indexes": {
         "idx_notifications_membership_uuid": {
           "name": "idx_notifications_membership_uuid",
           "columns": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {
-        "notifications_membership_uuid_memberships_membership_uuid_fk": {
-          "name": "notifications_membership_uuid_memberships_membership_uuid_fk",
+        "notifications_user_uuid_users_user_uuid_fk": {
+          "name": "notifications_user_uuid_users_user_uuid_fk",
           "tableFrom": "notifications",
-          "tableTo": "memberships",
+          "tableTo": "users",
           "columnsFrom": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "columnsTo": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -1315,8 +1315,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "membership_uuid": {
-          "name": "membership_uuid",
+        "user_uuid": {
+          "name": "user_uuid",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -1336,35 +1336,43 @@
           "notNull": true,
           "autoincrement": false,
           "default": "(unixepoch())"
+        },
+        "is_valid": {
+          "name": "is_valid",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
         }
       },
       "indexes": {
-        "idx_subscriptions_membership_uuid": {
-          "name": "idx_subscriptions_membership_uuid",
+        "idx_subscriptions_user_uuid": {
+          "name": "idx_subscriptions_user_uuid",
           "columns": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "isUnique": false
         },
-        "uniq_membership_post": {
-          "name": "uniq_membership_post",
+        "uniq_user_post": {
+          "name": "uniq_user_post",
           "columns": [
-            "membership_uuid",
+            "user_uuid",
             "post_uuid"
           ],
           "isUnique": true
         }
       },
       "foreignKeys": {
-        "subscriptions_membership_uuid_memberships_membership_uuid_fk": {
-          "name": "subscriptions_membership_uuid_memberships_membership_uuid_fk",
+        "subscriptions_user_uuid_users_user_uuid_fk": {
+          "name": "subscriptions_user_uuid_users_user_uuid_fk",
           "tableFrom": "subscriptions",
-          "tableTo": "memberships",
+          "tableTo": "users",
           "columnsFrom": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "columnsTo": [
-            "membership_uuid"
+            "user_uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"

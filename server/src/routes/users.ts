@@ -1,7 +1,7 @@
 import { Hono, Context } from 'hono';
 import { drizzle } from "drizzle-orm/d1";
 import { eq, or, and } from "drizzle-orm";
-import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes } from "../db/schema";
+import { organizations, users, memberships, profiles, sessions, projects, events, polls, votes, questions, posts, comments, replies, notifications, subscriptions  } from "../db/schema";
 import type { D1Database } from "@cloudflare/workers-types";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
