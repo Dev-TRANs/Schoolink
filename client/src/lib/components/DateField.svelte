@@ -13,6 +13,8 @@
     // 入力された日付と時刻
     let dateValue = "";
     let timeValue = "";
+    let dateFocused = false;
+    let timeFocused = false;
   
     // コンポーネントの初期化時に値が存在する場合、日付と時刻に変換
     $: {
@@ -84,8 +86,17 @@
           name={`${name}-date`}
           value={dateValue}
           on:input={updateDate}
+          on:focus={() => dateFocused = true}
+          on:blur={() => dateFocused = false}
           disabled={disabled}
-          class="w-full px-3 py-2 border {showError && error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {className}"
+          class="w-full px-3 py-2 border rounded-lg shadow-sm transition
+            {showError && error 
+              ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+              : dateFocused || dateValue
+                ? 'border-sky-500 bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+                : 'border-gray-300 hover:bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+            }
+            focus:outline-none {className}"
         />
       </div>
       
@@ -97,8 +108,17 @@
           name={`${name}-time`}
           value={timeValue}
           on:input={updateTime}
+          on:focus={() => timeFocused = true}
+          on:blur={() => timeFocused = false}
           disabled={disabled}
-          class="w-full px-3 py-2 border {showError && error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {className}"
+          class="w-full px-3 py-2 border rounded-lg shadow-sm transition
+            {showError && error 
+              ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+              : timeFocused || timeValue
+                ? 'border-sky-500 bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+                : 'border-gray-300 hover:bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+            }
+            focus:outline-none {className}"
         />
       </div>
     </div>
@@ -108,13 +128,18 @@
         type="button" 
         on:click={setNow} 
         disabled={disabled}
-        class="px-3 py-1 text-sm border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        class="px-3 py-2 text-sm border border-sky-500 rounded-lg shadow-sm transition
+          {disabled 
+            ? 'opacity-50 cursor-not-allowed' 
+            : 'hover:bg-sky-50 active:bg-sky-100'
+          }
+          focus:outline-none focus:ring-2 focus:ring-sky-200"
       >
         現在の日時を設定
       </button>
       
       {#if value}
-        <span class="ml-4 text-sm text-gray-500">
+        <span class="ml-4 text-sm text-gray-600">
           Unix時間: {value}
         </span>
       {/if}

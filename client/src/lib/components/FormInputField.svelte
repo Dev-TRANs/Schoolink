@@ -12,6 +12,8 @@
   export let rows = 3;
   export let className = ""
 
+  let isFocused = false;
+
   // バインディングのために双方向データフローを設定
   function updateValue(event) {
     value = event.target.value;
@@ -32,7 +34,16 @@
       {rows}
       value={value}
       on:input={updateValue}
-      class="w-full px-3 py-2 border {showError && error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {className}"
+      on:focus={() => isFocused = true}
+      on:blur={() => isFocused = false}
+      class="w-full px-3 py-2 border rounded-lg shadow-sm transition
+        {showError && error 
+          ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+          : isFocused || value
+            ? 'border-sky-500 bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+            : 'border-gray-300 hover:bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+        }
+        focus:outline-none {className}"
     ></textarea>
   {:else}
     <input
@@ -43,7 +54,16 @@
       {disabled}
       value={value}
       on:input={updateValue}
-      class="w-full px-3 py-2 border {showError && error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 {className}"
+      on:focus={() => isFocused = true}
+      on:blur={() => isFocused = false}
+      class="w-full px-3 py-2 border rounded-lg shadow-sm transition
+        {showError && error 
+          ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+          : isFocused || value
+            ? 'border-sky-500 bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+            : 'border-gray-300 hover:bg-sky-50 focus:border-sky-500 focus:ring-2 focus:ring-sky-200'
+        }
+        focus:outline-none {className}"
     />
   {/if}
   
