@@ -1,18 +1,72 @@
-INSERT INTO organizations (organization_uuid, organization_id) 
-VALUES 
-('4bb3cc3d-7236-0952-2db5-295a61b0bf6b', 'TRANs');
+-- 1. 新規組織の作成
+INSERT INTO organizations (
+    organization_uuid,
+    organization_id,
+    created_at
+) VALUES (
+    'ece98901-274c-ec55-fba9-2900a844c4b5',
+    'trans',
+    unixepoch()
+);
 
-INSERT INTO users (user_uuid, user_id, hashed_password) 
-VALUES 
-('792ff4c0-92c4-921a-c096-84c24e1c8168', 'kombumori', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8');
+-- 2. 管理者ユーザーの作成
+INSERT INTO users (
+    user_uuid,
+    user_id,
+    hashed_password,
+    is_valid,
+    is_frozen,
+    created_at
+) VALUES (
+    '64a6cd46-1753-7f4e-5ade-d4bd1f2150fc',
+    'kombumori',
+    '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',  -- "password" / SHA-256
+    1,
+    0,
+    unixepoch()
+);
 
-INSERT INTO memberships (membership_uuid, organization_uuid, user_uuid, role) 
-VALUES 
-('63fb838c-ae2d-b785-a8e9-fc528b8478b4', '4bb3cc3d-7236-0952-2db5-295a61b0bf6b', '792ff4c0-92c4-921a-c096-84c24e1c8168', 'admin');
+-- 3. メンバーシップ（adminとして登録）
+INSERT INTO memberships (
+    membership_uuid,
+    organization_uuid,
+    user_uuid,
+    role,
+    joined_at
+) VALUES (
+    'dc9c737b-2365-432b-31be-91e751e9ddcb',
+    'ece98901-274c-ec55-fba9-2900a844c4b5',
+    '64a6cd46-1753-7f4e-5ade-d4bd1f2150fc',
+    'admin',
+    unixepoch()
+);
 
-INSERT INTO profiles (profile_uuid, profile_type, organization_uuid, user_uuid, display_name, bio, avatar, instagram_id, threads_id, twitter_id) 
-VALUES 
-('38f540f2-3ea9-dc96-293d-3b00d680cc10', 'organization', '4bb3cc3d-7236-0952-2db5-295a61b0bf6b', NULL, 'TRANs', NULL, 'https://avatars.githubusercontent.com/u/96778966', 'trans.stki', NULL, NULL),
-('8567bbb1-75be-27cd-b588-f1c13383b7ff', 'user', NULL, '792ff4c0-92c4-921a-c096-84c24e1c8168', 'Kombumori', NULL, 'https://avatars.githubusercontent.com/u/96778966', NULL, NULL, NULL);
+-- 4. 組織のプロフィール作成
+INSERT INTO profiles (
+    profile_uuid,
+    profile_type,
+    organization_uuid,
+    display_name,
+    updated_at
+) VALUES (
+    'cea10fb8-a7e0-297a-ccc4-3a2a942047b2',
+    'organization',
+    'ece98901-274c-ec55-fba9-2900a844c4b5',
+    'TRANs',
+    unixepoch()
+);
 
-
+-- 5. 管理者ユーザーのプロフィール作成
+INSERT INTO profiles (
+    profile_uuid,
+    profile_type,
+    user_uuid,
+    display_name,
+    updated_at
+) VALUES (
+    'f1758c7a-48f8-d4ec-ec91-3f13f2f15609',
+    'user',
+    '64a6cd46-1753-7f4e-5ade-d4bd1f2150fc',
+    'kombumori',
+    unixepoch()
+);
