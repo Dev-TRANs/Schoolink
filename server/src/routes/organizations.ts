@@ -78,7 +78,10 @@ app.patch("/:organization_id", zValidator('form', z.object({
     instagramId: z.string(),
     threadsId: z.string(),
     twitterId: z.string(),
-    email: z.string().email()
+    email: z.preprocess(
+        v => v === "" ? undefined : v,
+        z.string().email().optional()
+    )
 }).partial()), async (c) => {
     const { displayName, bio, instagramId, threadsId, twitterId, email } = c.req.valid('form');
     const organization = c.get("organization")
@@ -103,7 +106,7 @@ app.patch("/:organization_id", zValidator('form', z.object({
 
 app.use("/:organization_id/id", checkOrgMembership("admin"))
 
-app.post("/:organization_id/id", zValidator('json', z.object({
+app.patch("/:organization_id/id", zValidator('json', z.object({
     sessionUuid: z.string(),
     newOrganizationId: z.string()
 })), async (c) => {
