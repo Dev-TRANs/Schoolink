@@ -155,6 +155,16 @@
         value={organization.twitterId}
         disabled={loading}
       />
+      <FormInputField
+        className="mb-5"
+        id="email"
+        name="email"
+        label="メールアドレス"
+        error="メールアドレス"
+        value={organization.email}
+        disabled={loading}
+        type="email"
+      />
       {#if errorMessage}
         <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md mt-5">
           {errorMessage}

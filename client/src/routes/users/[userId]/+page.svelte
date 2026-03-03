@@ -55,6 +55,11 @@
                     {user.organizationDisplayName}
                 </a>
             </p>
+            {#if user.email}
+            <p class="text-sm text-gray-500">
+                メール: <a class="hover:underline text-sky-600" href="mailto:{user.email}">{user.email}</a>
+            </p>
+            {/if}
             {#if user.twitterId || user.instagramId || user.threadsId}
             <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-gray-500">
                 <span>SNS:</span>

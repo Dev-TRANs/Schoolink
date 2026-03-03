@@ -93,6 +93,7 @@ export type UserType = {
     instagramId: string | null;
     threadsId: string | null;
     twitterId: string | null;
+    email: string | null;
     organizationId: string;
     organizationDisplayName: string;
     organizationAvatar: string;
@@ -107,5 +108,6 @@ export type OrganizationType = {
     instagramId: string;
     threadsId: string;
     twitterId: string;
+    email: string | null;
     users: Omit<UserType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
 }

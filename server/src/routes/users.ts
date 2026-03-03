@@ -46,6 +46,7 @@ app.get("/", zValidator('query', z.object({
             instagramId: profile.instagramId,
             threadsId: profile.threadsId,
             twitterId: profile.twitterId,
+            email: profile.email,
             organizationId: organization.organizationId,
             organizationDisplayName: organizationProfile.displayName,
             organizationAvatar: organizationProfile.avatar,
@@ -80,6 +81,7 @@ app.get("/:user_id", async (c) => {
         instagramId: profile.instagramId,
         threadsId: profile.threadsId,
         twitterId: profile.twitterId,
+        email: profile.email,
         organizationId: organization.organizationId,
         organizationDisplayName: organizationProfile.displayName,
         organizationAvatar: organizationProfile.avatar,
@@ -115,9 +117,10 @@ app.post("/:user_id", zValidator('form', z.object({
     bio: z.string(),
     instagramId: z.string(),
     threadsId: z.string(),
-    twitterId: z.string()
+    twitterId: z.string(),
+    email: z.string().email()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid('form');
+    const { displayName, bio, instagramId, threadsId, twitterId, email } = c.req.valid('form');
     const session = c.get("session")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -126,6 +129,7 @@ app.post("/:user_id", zValidator('form', z.object({
         instagramId: instagramId,
         threadsId: threadsId,
         twitterId: twitterId,
+        email: email,
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedProfile = Object.fromEntries(

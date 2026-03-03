@@ -27,6 +27,11 @@
         <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <p class="text-3xl font-bold">{organization.displayName}</p>
             <p class="text-gray-500 text-md">ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{organization.organizationId}</span></p>
+            {#if organization.email}
+            <p class="text-sm text-gray-500">
+                メール: <a class="hover:underline text-sky-600" href="mailto:{organization.email}">{organization.email}</a>
+            </p>
+            {/if}
             {#if organization.twitterId || organization.instagramId || organization.threadsId}
             <div class="flex flex-wrap justify-center sm:justify-start gap-3 text-sm text-gray-500">
                 <span>SNS:</span>

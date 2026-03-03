@@ -44,6 +44,7 @@ app.get("/:organization_id", async (c) => {
             instagramId: userProfile.instagramId,
             threadsId: userProfile.threadsId,
             twitterId: userProfile.twitterId,
+            email: userProfile.email,
             role: organizationMembership.role
         }
         return userData
@@ -56,6 +57,7 @@ app.get("/:organization_id", async (c) => {
         instagramId: profile.instagramId,
         threadsId: profile.threadsId,
         twitterId: profile.twitterId,
+        email: profile.email,
         users: organizationUsers
     }
     return c.json(
@@ -67,15 +69,16 @@ app.get("/:organization_id", async (c) => {
 
 app.use("/:organization_id", checkOrgMembership("admin"))
 
-app.post("/:organization_id", zValidator('form', z.object({
+app.patch("/:organization_id", zValidator('form', z.object({
     sessionUuid: z.string(),
     displayName: z.string(),
     bio: z.string(),
     instagramId: z.string(),
     threadsId: z.string(),
-    twitterId: z.string()
+    twitterId: z.string(),
+    email: z.string().email()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid('form');
+    const { displayName, bio, instagramId, threadsId, twitterId, email } = c.req.valid('form');
     const organization = c.get("organization")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -84,6 +87,7 @@ app.post("/:organization_id", zValidator('form', z.object({
         instagramId: instagramId,
         threadsId: threadsId,
         twitterId: twitterId,
+        email: email,
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedProfile = Object.fromEntries(
