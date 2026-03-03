@@ -181,7 +181,7 @@
         </a>
         <a href="/questions">
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/questions') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/questions') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">help</span>
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/questions') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">live_help</span>
 			    質問
 		    </div>
         </a>
