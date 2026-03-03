@@ -58,22 +58,9 @@
         <a href="/">
             <p class="text-3xl font-bold font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
-        <div class="absolute right-4 flex items-center gap-2">
-            {#if user}
-            <!-- 通知ベル -->
-            <a href="/notifications" class="relative">
-                <span class="!text-2xl material-symbols-outlined text-blue-600">notifications</span>
-                {#if $unreadCount > 0}
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
-                    {$unreadCount > 99 ? '99+' : $unreadCount}
-                </span>
-                {/if}
-            </a>
-            {/if}
-            <span class="!text-2xl material-symbols-outlined text-blue-600">
-                <a href="/settings">{ user ? "settings" : "login" }</a>
-            </span>
-        </div>
+        <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
+            <a href="/settings">{ user ? "settings" : "login" }</a>
+        </span>
     </div>
 </header>
 
