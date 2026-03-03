@@ -51,6 +51,15 @@
         <div class="col-span-full whitespace-pre-line text-gray-700 text-center sm:text-left">{organization.bio}</div>
         {/if}
     </div>
+    {#if organization.profileBook}
+    <div class="w-full max-w-3xl">
+        <h2 class="text-2xl font-bold text-center mb-4">プロフィール帳</h2>
+        <a href={organization.profileBook} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 justify-center border border-sky-400 text-sky-600 hover:bg-sky-50 transition rounded-lg px-6 py-3 w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+            プロフィール帳を見る (PDF)
+        </a>
+    </div>
+    {/if}
     <div class="w-full max-w-3xl">
         <h2 class="text-2xl font-bold text-center mb-4">ユーザー</h2>
         <div class="space-y-4">

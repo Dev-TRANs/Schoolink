@@ -109,5 +109,6 @@ export type OrganizationType = {
     threadsId: string;
     twitterId: string;
     email: string | null;
+    profileBook: string | null;
     users: Omit<UserType, "organizationId" | "organizationDisplayName" | "organizationAvatar">[]
 }

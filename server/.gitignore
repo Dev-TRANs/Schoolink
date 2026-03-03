@@ -33,3 +33,5 @@ lerna-debug.log*
 .DS_Store
 
 .dev.vars
+
+.wrangler

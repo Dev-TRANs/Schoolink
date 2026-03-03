@@ -1,0 +1,1 @@
+ALTER TABLE `profiles` ADD `profile_book` text;

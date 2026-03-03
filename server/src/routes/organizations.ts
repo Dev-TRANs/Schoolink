@@ -11,6 +11,7 @@ type Env = {
     Bindings: {
         DB: D1Database;
         SCRIPT_ID: string;
+        FILE_SCRIPT_ID: string;
     };
     Variables: {
         session: typeof sessions.$inferSelect;
@@ -58,6 +59,7 @@ app.get("/:organization_id", async (c) => {
         threadsId: profile.threadsId,
         twitterId: profile.twitterId,
         email: profile.email,
+        profileBook: profile.profileBook,
         users: organizationUsers
     }
     return c.json(
@@ -144,6 +146,47 @@ app.post("/:organization_id/avatar", zValidator('form', z.object({
         );
     }
     await db.update(profiles).set({ avatar: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
+    return c.json(
+        { success: true }
+    )
+})
+
+app.use("/:organization_id/profile_book", checkOrgMembership("admin"))
+
+app.post("/:organization_id/profile_book", zValidator('form', z.object({
+    sessionUuid: z.string(),
+    profileBook: z.instanceof(File)
+})), async (c) => {
+    const { profileBook } = await c.req.parseBody();
+    const organization = c.get("organization")
+    const db = drizzle(c.env.DB)
+    if (!(profileBook instanceof File)) {
+        return c.json(
+            { success: false, message: "profileBook must be a file" },
+            400
+        );
+    }
+    if (profileBook.type !== 'application/pdf') {
+        return c.json(
+            { success: false, message: "profileBook must be a PDF file" },
+            400
+        );
+    }
+    const forwardFormData = new FormData();
+    forwardFormData.append('file', profileBook);
+    forwardFormData.append('scriptId', c.env.FILE_SCRIPT_ID);
+    const response = await fetch("https://file.stki.org/", {
+        method: 'POST',
+        body: forwardFormData,
+    });
+    const data: any = await response.json();
+    if (!response.ok) {
+        return c.json(
+            { success: false, message: `File API Error (${response.status}): ${data.error}` },
+            500,
+        );
+    }
+    await db.update(profiles).set({ profileBook: data.url, updatedAt: Math.floor(Date.now() / 1000) }).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
     return c.json(
         { success: true }
     )

@@ -56,6 +56,7 @@ export const profiles = sqliteTable(
   		threadsId: text("threads_id"),
   		twitterId: text("twitter_id"),
   		email: text("email"),
+  		profileBook: text("profile_book"),
 		updatedAt: integer('updated_at').notNull().default(sql`(unixepoch())`),
 	},
 	(table) => [
