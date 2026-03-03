@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { onMount } from "svelte";
-    import type { UserType, ProjectType, EventType, PollType } from "../../../lib/types";
+    import type { UserType, ProjectType, EventType, PollType, QuestionType } from "../../../lib/types";
 
     let user = $state<UserType>();
 
@@ -14,6 +14,8 @@
     let events = $state<EventType[]>([])
 
     let polls = $state<PollType[]>([])
+
+    let questions = $state<QuestionType[]>([])
 
     onMount(async() => {
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -28,6 +30,9 @@
         const pollResponce = await fetch(`${PUBLIC_API_URL}/polls?userId=${userId}`);
         const pollData = await pollResponce.json();
         polls = pollData.data;
+        const questionResponce = await fetch(`${PUBLIC_API_URL}/questions?userId=${userId}`);
+        const questionData = await questionResponce.json();
+        questions = questionData.data;
     })
 </script>
 
@@ -68,8 +73,9 @@
 
     {#each [
         { label: "プロジェクト", items: projects, type: "projects", idKey: "projectId" },
-        { label: "イベント", items: events, type: "projects", idKey: "eventId" },
-        { label: "投票", items: polls, type: "polls", idKey: "pollId" }
+        { label: "イベント", items: events, type: "events", idKey: "eventId" },
+        { label: "投票", items: polls, type: "polls", idKey: "pollId" },
+        { label: "質問", items: questions, type: "questions", idKey: "questionId" }
     ] as section}
     <div class="w-full max-w-6xl">
         <h2 class="text-2xl font-bold text-center mb-4">{section.label}</h2>

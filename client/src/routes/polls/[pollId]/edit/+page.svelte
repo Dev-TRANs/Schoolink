@@ -57,7 +57,7 @@
         }
   
         const response = await fetch(`${PUBLIC_API_URL}/polls/${poll.pollId}`, {
-          method: 'PUT',
+          method: 'PATCH',
           body: data
         });
   

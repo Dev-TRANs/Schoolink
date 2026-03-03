@@ -63,9 +63,11 @@ app.get("/:organization_id", async (c) => {
     )
 })
 
+//put -> patchがよい
+
 app.use("/:organization_id", checkOrgMembership("admin"))
 
-app.put("/:organization_id", zValidator('form', z.object({
+app.post("/:organization_id", zValidator('form', z.object({
     sessionUuid: z.string(),
     displayName: z.string(),
     bio: z.string(),
@@ -73,7 +75,7 @@ app.put("/:organization_id", zValidator('form', z.object({
     threadsId: z.string(),
     twitterId: z.string()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = await c.req.parseBody();
+    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid('form');
     const organization = c.get("organization")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -85,7 +87,7 @@ app.put("/:organization_id", zValidator('form', z.object({
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedProfile = Object.fromEntries(
-        Object.entries(newProfile).filter(([_, value]) => value !== null)
+        Object.entries(newProfile).filter(([_, value]) => value !== null && value !== undefined)
     );
     await db.update(profiles).set(updatedProfile).where(eq(profiles.organizationUuid, organization.organizationUuid)).execute()
     return c.json(
@@ -95,7 +97,7 @@ app.put("/:organization_id", zValidator('form', z.object({
 
 app.use("/:organization_id/id", checkOrgMembership("admin"))
 
-app.put("/:organization_id/id", zValidator('json', z.object({
+app.post("/:organization_id/id", zValidator('json', z.object({
     sessionUuid: z.string(),
     newOrganizationId: z.string()
 })), async (c) => {

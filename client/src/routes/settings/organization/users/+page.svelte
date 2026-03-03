@@ -54,7 +54,7 @@
     const adminizeUser = async (userId) => {
         try {
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}/role`, {
-          method: 'put',
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json'
           },

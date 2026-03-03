@@ -87,6 +87,7 @@ app.get('/:event_id', async (c) => {
     const [organizationProfile] = await db.select().from(profiles).where(eq(profiles.organizationUuid, membership.organizationUuid))
     const data = {
         eventId: event.eventId,
+        postUuid: event.postUuid,
         title: event.title,
         description: event.description,
         buttons: event.buttons,
@@ -186,7 +187,7 @@ app.post('/', zValidator('form', z.object({
     )
 })
 
-app.put('/:event_id', zValidator('form', z.object({
+app.patch('/:event_id', zValidator('form', z.object({
     sessionUuid: z.string(),
     title: z.string(),
     description: z.string(),
@@ -215,7 +216,7 @@ app.put('/:event_id', zValidator('form', z.object({
     const session = c.get("session")
     const [event] = await db.select().from(events).where(eq(events.eventId, eventId))
     const [eventMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, event.membershipUuid))
-    if (eventMembership.userUuid != session.userUuid) {
+    if (eventMembership.userUuid !== session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
@@ -257,23 +258,25 @@ app.put('/:event_id', zValidator('form', z.object({
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedDetail = Object.fromEntries(
-        Object.entries(newDetail).filter(([_, value]) => value !== null)
+        Object.entries(newDetail).filter(([_, value]) => value !== null && value !== undefined)
     );
     await db.update(events).set(updatedDetail).where(eq(events.eventId, eventId)).execute()
     const postsSubscriptions = await db.select().from(subscriptions).where(eq(subscriptions.postUuid, event.postUuid))
-    const newNotifications: typeof notifications.$inferInsert[] = postsSubscriptions.map(postSubscription => ({
+    const newNotifications: typeof notifications.$inferInsert[] = postsSubscriptions.filter(postsSubscription => postsSubscription.userUuid !== session.userUuid).map(postSubscription => ({
         notificationUuid: crypto.randomUUID(),
         userUuid: postSubscription.userUuid,
         content: `イベント:${event.title}にあらたな変更がありました。`,
         href: `/events/${event.eventId}`
     }))
-    await db.insert(notifications).values(newNotifications).execute()
+    if (newNotifications.length > 0) {
+        await db.insert(notifications).values(newNotifications).execute()
+    }
     return c.json(
         { success: true }
     )
 })
 
-app.put('/:event_id/is_valid', zValidator('json', z.object({
+app.patch('/:event_id/is_valid', zValidator('json', z.object({
     sessionUuid: z.string(),
 })), async(c) => {
     const db = drizzle(c.env.DB)
@@ -281,7 +284,7 @@ app.put('/:event_id/is_valid', zValidator('json', z.object({
     const session = c.get("session")
     const [event] = await db.select().from(events).where(eq(events.eventId, eventId))
     const [eventMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, event.membershipUuid))
-    if (eventMembership.userUuid != session.userUuid) {
+    if (eventMembership.userUuid !== session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,

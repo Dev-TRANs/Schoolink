@@ -66,7 +66,7 @@
         data.set("sessionUuid", sessionUuid);
         
         const response = await fetch(`${PUBLIC_API_URL}/organizations/${organization.organizationId}`, {
-          method: 'put',
+          method: 'PATCH',
           body: data
         });
         

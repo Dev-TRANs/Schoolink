@@ -52,6 +52,14 @@ app.post("/sign_out", zValidator('json', z.object({
 })), async (c) => {
     const { sessionUuid } = c.req.valid('json')
     const db = drizzle(c.env.DB)
+    const session = c.get("session")
+    // 自分のセッションのみ無効化できる
+    if (session.sessionUuid !== sessionUuid) {
+        return c.json(
+            { success: false, message: "Forbidden" },
+            403
+        )
+    }
     await db.update(sessions).set({ isValid: 0 }).where(eq(sessions.sessionUuid, sessionUuid)).execute()
     return c.json(
         { success: true },
@@ -98,7 +106,6 @@ app.post("/create_account", zValidator('json', z.object({
     await db.insert(memberships).values(membership).execute()
     return c.json(
         { success: true },
-        500,
     );
 })
 
@@ -111,7 +118,7 @@ app.post("/change_password", zValidator('json', z.object({
     const db = drizzle(c.env.DB)
     const session = c.get("session")
     const [ user ] = await db.select().from(users).where(eq(users.userUuid, session.userUuid)).execute()
-    if (user.hashedPassword != hashedCurrentPassword) {
+    if (user.hashedPassword !== hashedCurrentPassword) {
         return c.json(
             { success: false, message: "Invalid credentials" },
             401

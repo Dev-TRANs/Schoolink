@@ -92,7 +92,7 @@ app.get("/:user_id", async (c) => {
 
 app.use("/:user_id/id", checkUserSession)
 
-app.put("/:user_id/id", zValidator('json', z.object({
+app.patch("/:user_id/id", zValidator('json', z.object({
     sessionUuid: z.string(),
     newUserId: z.string()
 })), async (c) => {
@@ -105,9 +105,11 @@ app.put("/:user_id/id", zValidator('json', z.object({
     )
 })
 
+//以下の構成は不自然 /:user_id はいらない
+
 app.use("/:user_id", checkUserSession)
 
-app.put("/:user_id", zValidator('form', z.object({
+app.post("/:user_id", zValidator('form', z.object({
     sessionUuid: z.string(),
     displayName: z.string(),
     bio: z.string(),
@@ -115,7 +117,7 @@ app.put("/:user_id", zValidator('form', z.object({
     threadsId: z.string(),
     twitterId: z.string()
 }).partial()), async (c) => {
-    const { displayName, bio, instagramId, threadsId, twitterId } = await c.req.parseBody();
+    const { displayName, bio, instagramId, threadsId, twitterId } = c.req.valid('form');
     const session = c.get("session")
     const db = drizzle(c.env.DB)
     const newProfile = {
@@ -127,7 +129,7 @@ app.put("/:user_id", zValidator('form', z.object({
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedProfile = Object.fromEntries(
-        Object.entries(newProfile).filter(([_, value]) => value !== null)
+        Object.entries(newProfile).filter(([_, value]) => value !== null && value !== undefined)
     );
     await db.update(profiles).set(updatedProfile).where(eq(profiles.userUuid, session.userUuid)).execute()
     return c.json(
@@ -172,7 +174,7 @@ app.post("/:user_id/avatar", zValidator('form', z.object({
 
 app.use("/:user_id/role", checkOrgMembership("admin"))
 
-app.put("/:user_id/role", zValidator('json', z.object({
+app.patch("/:user_id/role", zValidator('json', z.object({
     sessionUuid: z.string(),
     organizationId: z.string(),
 })), async (c) => {
@@ -187,7 +189,7 @@ app.put("/:user_id/role", zValidator('json', z.object({
         );
     }
     const [targetMembership] = await db.select().from(memberships).where(eq(memberships.userUuid, targetUser.userUuid)).execute()
-    if (targetMembership.organizationUuid != requesterMembership.organizationUuid) {
+    if (targetMembership.organizationUuid !== requesterMembership.organizationUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
@@ -201,7 +203,7 @@ app.put("/:user_id/role", zValidator('json', z.object({
 
 app.use("/:user_id/is_valid", checkOrgMembership("admin"))
 
-app.put("/:user_id/is_valid", zValidator('json', z.object({
+app.patch("/:user_id/is_valid", zValidator('json', z.object({
     sessionUuid: z.string(),
     organizationId: z.string(),
 })), async (c: any) => {
@@ -216,7 +218,7 @@ app.put("/:user_id/is_valid", zValidator('json', z.object({
         );
     }
     const [targetMembership] = await db.select().from(memberships).where(eq(memberships.userUuid, targetUser.userUuid)).execute()
-    if (targetMembership.organizationUuid != requesterMembership.organizationUuid) {
+    if (targetMembership.organizationUuid !== requesterMembership.organizationUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,

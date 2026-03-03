@@ -50,7 +50,7 @@
         }
         
         const response = await fetch(`${PUBLIC_API_URL}/projects/${project.projectId}`, {
-          method: 'put',
+          method: 'PATCH',
           body: data
         });
         

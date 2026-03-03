@@ -61,7 +61,7 @@
         data.set("sessionUuid", sessionUuid);
         
         const response = await fetch(`${PUBLIC_API_URL}/users/${user.userId}`, {
-          method: 'put',
+          method: 'PATCH',
           body: data
         });
         

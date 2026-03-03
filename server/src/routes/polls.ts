@@ -86,6 +86,7 @@ app.get('/:poll_id', async (c) => {
     const pollChoices = poll.choices.map((name: string) => ({ name, count: pollVotes.filter(v => v.choiceName === name).length }));
     const data = {
         pollId: poll.pollId,
+        postUuid: poll.postUuid,
         title: poll.title,
         description: poll.description,
         pollChoices: pollChoices,
@@ -136,7 +137,7 @@ app.post('/:poll_id/vote', zValidator('json', z.object({
             voteUuid: crypto.randomUUID(),
             pollUuid: poll.pollUuid,
             userUuid: userUuid,
-            isGuest: user ? 1 : 0,
+            isGuest: user ? 0 : 1,
             choiceName: choiceName,
         }
         await db.insert(votes).values(voteData).execute()
@@ -221,7 +222,7 @@ app.post('/', zValidator('form', z.object({
     )
 })
 
-app.put('/:poll_id', zValidator('form', z.object({
+app.patch('/:poll_id', zValidator('form', z.object({
     sessionUuid: z.string(),
     title: z.string(),
     description: z.string(),
@@ -241,7 +242,7 @@ app.put('/:poll_id', zValidator('form', z.object({
     const session = c.get("session")
     const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
     const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
-    if (pollMembership.userUuid != session.userUuid) {
+    if (pollMembership.userUuid !== session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,
@@ -280,23 +281,25 @@ app.put('/:poll_id', zValidator('form', z.object({
         updatedAt: Math.floor(Date.now() / 1000)
     }
     const updatedDetail = Object.fromEntries(
-        Object.entries(newDetail).filter(([_, value]) => value !== null)
+        Object.entries(newDetail).filter(([_, value]) => value !== null && value !== undefined)
     );
     await db.update(polls).set(updatedDetail).where(eq(polls.pollId, pollId)).execute()
     const postsSubscriptions = await db.select().from(subscriptions).where(eq(subscriptions.postUuid, poll.postUuid))
-    const newNotifications: typeof notifications.$inferInsert[] = postsSubscriptions.map(postSubscription => ({
+    const newNotifications: typeof notifications.$inferInsert[] = postsSubscriptions.filter(postsSubscription => postsSubscription.userUuid !== session.userUuid).map(postSubscription => ({
         notificationUuid: crypto.randomUUID(),
         userUuid: postSubscription.userUuid,
         content: `投票:${poll.title}にあらたな変更がありました。`,
         href: `/polls/${poll.pollId}`
     }))
-    await db.insert(notifications).values(newNotifications).execute()
+    if (newNotifications.length > 0) {
+        await db.insert(notifications).values(newNotifications).execute()
+    }
     return c.json(
         { success: true }
     )
 })
 
-app.put('/:poll_id/is_valid', zValidator('json', z.object({
+app.patch('/:poll_id/is_valid', zValidator('json', z.object({
     sessionUuid: z.string(),
 })), async(c) => {
     const db = drizzle(c.env.DB)
@@ -304,7 +307,7 @@ app.put('/:poll_id/is_valid', zValidator('json', z.object({
     const session = c.get("session")
     const [poll] = await db.select().from(polls).where(eq(polls.pollId, pollId))
     const [pollMembership] = await db.select().from(memberships).where(eq(memberships.membershipUuid, poll.membershipUuid))
-    if (pollMembership.userUuid != session.userUuid) {
+    if (pollMembership.userUuid !== session.userUuid) {
         return c.json(
             { success: false, message: "Forbidden" },
             403,

@@ -78,7 +78,7 @@
 
     try {
       const response = await fetch(`${PUBLIC_API_URL}/users/${userId}/id`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },

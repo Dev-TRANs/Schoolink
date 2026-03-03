@@ -8,20 +8,6 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import type { EventType } from "../../../../lib/types"
-    
-    type EventType = {
-        eventId: string;
-        title: string
-        description: string;
-        buttons: string;
-        thumbnail: string;
-        userId: string;
-        userDisplayName: string;
-        userAvatar: string;
-        organizationId: string;
-        organizationDisplayName: string;
-        organizationAvatar: string;
-    };
 
     const eventId = $page.params.eventId;
 
@@ -65,7 +51,7 @@
         }
         
         const response = await fetch(`${PUBLIC_API_URL}/events/${event.eventId}`, {
-          method: 'put',
+          method: 'PATCH',
           body: data
         });
         
