@@ -103,7 +103,7 @@
         </a>
         <a href="/questions">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/questions') ? 'bg-gray-300' : ''}">
-    	        <span class="material-symbols-outlined mr-1 text-blue-600">help</span>
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">live_help</span>
                 質問
             </div>
         </a>

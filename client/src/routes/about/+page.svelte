@@ -17,6 +17,11 @@
         イベント
     </div>
     <p class="mt-4">「<a class="underline" href="/events">イベント</a>」では、実施予定のイベントについてのページをかんたんに作成することができます。リンクを共有するだけでイベント情報を興味あるひとにイベントについてお知らせできます。</p>
+    <div class="text-2xl mt-5 flex justify-center items-center text-center py-2 rounded-r-xl">
+    	<span class="material-symbols-outlined mr-1 text-blue-600">live_help</span>
+        質問
+    </div>
+    <p class="mt-4">「<a class="underline" href="/questions">質問</a>」では、浮かんだ疑問を気軽に質問したり、自分の知見をもとに困っている人にアドバイスをすることができます。</p>
     <div class="w-full mt-15 flex flex-col items-center gap-5">
       <p class="text-center text-3xl font-bold font-AllertaStencil">Project Schoolink</p>
       <a href="https://seitokaishinko.org/" target="_blank" rel="noopener noreferrer">
