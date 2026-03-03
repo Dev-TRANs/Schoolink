@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Schoolinkについて | Schoolink</title>
+</svelte:head>
+
 <div class="w-4/5 mx-auto">
     <p class="text-normal md:text-xl text-center">つながる学生のためのプラットフォーム</p>
     <p class="text-6xl md:text-8xl font-bold font-AllertaStencil mt-4 text-center">Schoolink</p>

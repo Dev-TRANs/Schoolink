@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>質問 | Schoolink</title>
+</svelte:head>
+
 <script lang="ts">
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";

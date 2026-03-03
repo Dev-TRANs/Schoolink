@@ -35,6 +35,10 @@
         questions = questionData.data;
     })
 </script>
+<svelte:head>
+	<title>{user ? user.displayName + " | ユーザー | Schoolink" : "ユーザー | Schoolink"}</title>
+</svelte:head>
+
 
 {#if user}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">

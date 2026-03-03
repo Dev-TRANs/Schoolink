@@ -38,6 +38,10 @@
         goto("/projects");
     };
 </script>
+<svelte:head>
+	<title>{project ? project.title + " | プロジェクト | Schoolink" : "プロジェクト | Schoolink"}</title>
+</svelte:head>
+
 
 {#if project}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">

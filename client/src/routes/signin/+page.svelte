@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>ログイン | Schoolink</title>
+</svelte:head>
+
 <script>
     import { PUBLIC_API_URL } from "$env/static/public";
     import { goto } from '$app/navigation';

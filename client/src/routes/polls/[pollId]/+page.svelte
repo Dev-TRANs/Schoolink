@@ -80,6 +80,10 @@
         return choices.reduce((sum, c) => sum + c.count, 0);
     }
 </script>
+<svelte:head>
+	<title>{poll ? poll.title + " | 投票 | Schoolink" : "投票 | Schoolink"}</title>
+</svelte:head>
+
 
 {#if poll}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">

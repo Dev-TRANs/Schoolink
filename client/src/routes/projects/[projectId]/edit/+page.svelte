@@ -80,6 +80,10 @@
       }
     });
   </script>
+<svelte:head>
+	<title>{project ? project.title + " | プロジェクトを編集 | Schoolink" : "プロジェクトを編集 | Schoolink"}</title>
+</svelte:head>
+
   
   {#if project}
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>ユーザー管理設定 | 組織設定 | Schoolink</title>
+</svelte:head>
+
 <script lang="ts">
     //TODO: アカウント無効化
     import { PUBLIC_API_URL } from "$env/static/public";
@@ -138,7 +142,7 @@
 
 <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/settings">＜ 設定</a>
-    <p class="w-full text-center text-3xl font-bold mt-5">組織設定/ユーザー登録設定</p>
+    <p class="w-full text-center text-3xl font-bold mt-5">組織設定/ユーザー管理設定</p>
     {#if organization}
     <p class="w-full text-center text-2xl underline mt-5">ユーザー追加</p>
     <form on:submit|preventDefault={handleSubmit} class="space-y-4 mt-5">

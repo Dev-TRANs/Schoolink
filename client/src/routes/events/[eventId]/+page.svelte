@@ -38,6 +38,10 @@
         goto("/events");
     };
 </script>
+<svelte:head>
+	<title>{event ? event.title + " | イベント | Schoolink" : "イベント | Schoolink"}</title>
+</svelte:head>
+
 
 {#if event}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">

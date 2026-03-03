@@ -53,6 +53,10 @@
         goto("/questions");
     }
 </script>
+<svelte:head>
+	<title>{question ? question.title + " | 質問 | Schoolink" : "質問 | Schoolink"}</title>
+</svelte:head>
+
 
 {#if question}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">

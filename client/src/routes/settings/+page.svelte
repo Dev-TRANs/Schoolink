@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>設定 | Schoolink</title>
+</svelte:head>
+
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
@@ -79,7 +83,7 @@
     <div class="w-full mt-5">
         <p class="w-full text-center text-3xl font-bold">組織設定</p>
         <a href="/settings/organization/users">
-            <p class="w-full text-center mt-3 text-2xl hover:underline">ユーザー登録設定</p>
+            <p class="w-full text-center mt-3 text-2xl hover:underline">ユーザー管理設定</p>
         </a>
         <a href="/settings/organization/profile">
             <p class="w-full text-center mt-3 text-2xl hover:underline">プロフィール設定</p>

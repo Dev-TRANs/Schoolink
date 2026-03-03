@@ -75,6 +75,10 @@
       }
     }
   </script>
+<svelte:head>
+	<title>{poll ? poll.title + " | 投票を編集  | Schoolink" : "投票を編集 | Schoolink"}</title>
+</svelte:head>
+
   
   {#if poll}
     <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">

@@ -73,6 +73,10 @@
         }
     }
 </script>
+<svelte:head>
+	<title>{question ? question.title + " | 質問を編集 | Schoolink" : "質問を編集 | Schoolink"}</title>
+</svelte:head>
+
 
 {#if question}
 <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">

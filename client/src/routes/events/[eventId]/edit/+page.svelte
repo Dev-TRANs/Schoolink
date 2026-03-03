@@ -81,6 +81,10 @@
       }
     });
   </script>
+<svelte:head>
+	<title>{event ? event.title + " | イベントを編集 | Schoolink" : "イベントを編集 | Schoolink"}</title>
+</svelte:head>
+
   
   {#if event}
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">

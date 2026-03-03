@@ -15,6 +15,10 @@
         organization = data.data;
     })
 </script>
+<svelte:head>
+	<title>{organization ? organization.displayName + " | 組織 | Schoolink" : "組織 | Schoolink"}</title>
+</svelte:head>
+
 
 {#if organization}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">

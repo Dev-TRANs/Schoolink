@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>投票を作成 | Schoolink</title>
+</svelte:head>
+
 <script lang="ts">
     import FormInputField from "../../../lib/components/FormInputField.svelte";
     import ImgField from "../../../lib/components/ImgField.svelte";
