@@ -114,6 +114,8 @@
         const result = await response.json();
         if (result.success !== true) {
           errorMessage = result.message || '送信に失敗しました。';
+        } else {
+          goto(`/organizations/${organization.organizationId}`);
         }
       } catch (error) {
         console.error('Login error:', error);
