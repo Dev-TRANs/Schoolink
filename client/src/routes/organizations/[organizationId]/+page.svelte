@@ -7,9 +7,9 @@
     import { onMount } from 'svelte';
     import { goto } from "$app/navigation";
 
-    import FormInputField from "../../../../lib/components/FormInputField.svelte";
-    import ImgField from "../../../../lib/components/ImgField.svelte"
-    import type { UserType, OrganizationType } from "../../../../lib/types";
+    import FormInputField from "../../../lib/components/FormInputField.svelte";
+    import ImgField from "../../../lib/components/ImgField.svelte"
+    import type { UserType, OrganizationType } from "../../../lib/types";
 
     let sessionUuid = ""
     let imgFieldRef: ImgField;
