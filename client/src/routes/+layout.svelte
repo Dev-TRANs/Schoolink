@@ -133,6 +133,14 @@
             </a>
         </div>
         {/if}
+        {#if user && user.role === "admin"}
+        <a href="/admin">
+            <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/admin') ? 'bg-gray-300' : ''}">
+                <span class="material-symbols-outlined mr-1 text-blue-600">supervisor_account</span>
+                管理者用
+            </div>
+        </a>
+        {/if}
     </div>
 
     <div class="overflow-auto pt-10 pb-30 w-full">
