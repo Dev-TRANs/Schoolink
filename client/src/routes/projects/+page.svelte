@@ -12,6 +12,7 @@
     let filteredProjects = $state<ProjectType[]>([]);
     let searchQuery = $state<string>('');
     let fuse: Fuse<ProjectType>;
+    let loading = $state(true);
    
     onMount(async () => {
      const response = await fetch(`${PUBLIC_API_URL}/projects`);
@@ -19,15 +20,14 @@
      projects = data.data;
      filteredProjects = projects;
      
-     // Fuse.jsの設定
      fuse = new Fuse(projects, {
        keys: ['title', 'description', 'userDisplayName', 'organizationDisplayName'],
        threshold: 0.4,
        ignoreLocation: true
      });
+     loading = false;
     });
    
-    // 検索処理
     function handleSearch(event: Event) {
      const target = event.target as HTMLInputElement;
      searchQuery = target.value;
@@ -56,14 +56,22 @@
      {#if searchQuery && filteredProjects.length === 0}
      <p class="text-center text-2xl w-full mt-5">「{searchQuery}」の検索結果はありません</p>
      {/if}
+
+     {#if loading}
+     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6 animate-pulse">
+       {#each [1,2,3,4,5,6] as _}
+       <div>
+         <div class="aspect-[4/3] rounded-xl bg-gray-200"></div>
+         <div class="h-5 bg-gray-200 rounded mt-2 w-3/4"></div>
+         <div class="h-4 bg-gray-200 rounded mt-2 w-1/2"></div>
+       </div>
+       {/each}
+     </div>
+     {:else}
      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6">
        {#if !searchQuery}
        <a href={`/projects/create`}>
-         <div
-           class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200"
-         >
-           ＋
-         </div>
+         <div class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200">＋</div>
          <p class="text-xl w-full text-center mt-2">新規作成</p>
        </a>
        {/if}
@@ -84,5 +92,5 @@
          </a>
        {/each}
      </div>
+     {/if}
    </div>
-   

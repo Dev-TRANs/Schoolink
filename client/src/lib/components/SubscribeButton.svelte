@@ -77,6 +77,6 @@
     <span class="material-symbols-outlined text-base leading-none">
         {subscribed ? 'notifications_active' : 'notifications'}
     </span>
-    {subscribed ? '通知オン' : '通知オフ'}
+    {subscribed ? '通知中' : '通知を受け取る'}
 </button>
 {/if}

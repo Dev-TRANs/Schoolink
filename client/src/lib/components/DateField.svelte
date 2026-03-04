@@ -139,8 +139,8 @@
       </button>
       
       {#if value}
-        <span class="ml-4 text-sm text-gray-600">
-          Unix時間: {value}
+        <span class="ml-3 text-sm text-gray-500">
+          設定日時: {new Date(Number(value) * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
         </span>
       {/if}
     </div>

@@ -7,6 +7,8 @@
     import type { PollType } from "../../../lib/types";
     import SubscribeButton from "../../../lib/components/SubscribeButton.svelte";
     import CommentSection from "../../../lib/components/CommentSection.svelte";
+    import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
+    import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
 
     const pollId = get(page).params.pollId;
 
@@ -15,6 +17,8 @@
     let selectedChoice = $state<string | null>(null);
     let userId = $state<string | null>(null);
     let organizationId = $state<string>('');
+    let loading = $state(true);
+    let showDeleteDialog = $state(false);
 
     onMount(async () => {
         userId = localStorage.getItem("userId");
@@ -25,6 +29,7 @@
         };
         await loadPollData();
         await loadUserVote();
+        loading = false;
 
         if (sessionUuid) {
             const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -81,11 +86,12 @@
     }
 </script>
 <svelte:head>
-	<title>{poll ? poll.title + " | 投票 | Schoolink" : "投票 | Schoolink"}</title>
+    <title>{poll ? poll.title + " | 投票 | Schoolink" : "読み込み中… | 投票 | Schoolink"}</title>
 </svelte:head>
 
-
-{#if poll}
+{#if loading}
+    <SkeletonDetail />
+{:else if poll}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/polls">＜ 投票</a>
     <h1 class="text-3xl font-bold text-center mt-8">{poll.title}</h1>
@@ -143,7 +149,7 @@
         {#if poll.userId === userId}
         <div class="flex items-center gap-3">
             <a class="button-violet" href="/polls/{poll.pollId}/edit">編集</a>
-            <button class="button-red" onclick={removePoll}>削除</button>
+            <button class="button-red" onclick={() => showDeleteDialog = true}>削除</button>
         </div>
         {/if}
     </div>
@@ -151,3 +157,11 @@
     <CommentSection postUuid={poll.postUuid} {organizationId} />
 </div>
 {/if}
+
+<ConfirmDialog
+    open={showDeleteDialog}
+    title="投票を削除"
+    message="「{poll?.title}」を削除しますか？この操作は取り消せません。"
+    onConfirm={removePoll}
+    onCancel={() => showDeleteDialog = false}
+/>

@@ -25,7 +25,6 @@
                 const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
                 const data = await response.json();
                 user = data.data;
-                // 通知をバックグラウンドで取得してポーリング開始
                 fetchNotifications(PUBLIC_API_URL);
                 startPolling(PUBLIC_API_URL, 30000);
             } else {
@@ -58,9 +57,12 @@
         <a href="/">
             <p class="text-3xl font-bold font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
-        <span class="!text-3xl material-symbols-outlined text-blue-600 absolute right-6">
-            <a href="/settings">{ user ? "settings" : "login" }</a>
-        </span>
+        <!-- 修正: アンカーをアイコンの外に出してテキスト表示バグを解消 -->
+        <a href="/settings" class="absolute right-6">
+            <span class="!text-3xl material-symbols-outlined text-blue-600">
+                { user ? "settings" : "login" }
+            </span>
+        </a>
     </div>
 </header>
 
@@ -95,17 +97,10 @@
             </div>
         </a>
         {#if user}
-        <!-- 通知（ログイン時のみ） -->
+        <!-- 通知（ログイン時のみ）: PCはリスト右端にバッジのみ -->
         <a href="/notifications">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/notifications') ? 'bg-gray-300' : ''}">
-                <span class="relative mr-1 pt-2">
-                    <span class="material-symbols-outlined text-blue-600">notifications</span>
-                    {#if $unreadCount > 0}
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
-                        {$unreadCount > 99 ? '99+' : $unreadCount}
-                    </span>
-                    {/if}
-                </span>
+                <span class="material-symbols-outlined mr-1 text-blue-600">notifications</span>
                 通知
                 {#if $unreadCount > 0}
                 <span class="ml-auto mr-4 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">{$unreadCount > 99 ? '99+' : $unreadCount}</span>
@@ -145,7 +140,7 @@
     </div>
 </div>
 
-<!-- モバイルフッター -->
+<!-- モバイルフッター: アイコンにのみバッジ表示 -->
 <footer class="sm:hidden bg-gray-100/80 backdrop-blur-xl fixed bottom-0 w-full shadow-lg">
     <div class="grid grid-cols-5 w-full text-gray-600 font-bold">
         <a href="/projects">
@@ -172,8 +167,9 @@
 			    質問
 		    </div>
         </a>
+        <!-- 通知アイコンにバッジのみ表示（テキスト横にはなし） -->
         <a href={user ? '/notifications' : '/signin'}>
-		    <div class="text-xs flex flex-col items-center py-2 relative {page.url.pathname.includes('/notifications') ? 'text-blue-600' : ''}">
+		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/notifications') ? 'text-blue-600' : ''}">
                 <span class="relative">
 			        <span class="material-symbols-outlined text-{page.url.pathname.includes('/notifications') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">notifications</span>
                     {#if $unreadCount > 0}

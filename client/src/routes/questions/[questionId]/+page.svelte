@@ -6,6 +6,8 @@
     import type { QuestionType } from "../../../lib/types";
     import SubscribeButton from "../../../lib/components/SubscribeButton.svelte";
     import CommentSection from "../../../lib/components/CommentSection.svelte";
+    import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
+    import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
 
     const questionId = $page.params.questionId;
 
@@ -14,6 +16,8 @@
     let sessionUuid = $state<string | null>(null);
     let organizationId = $state<string>('');
     let bestCommentUuid = $state<string | null>(null);
+    let loading = $state(true);
+    let showDeleteDialog = $state(false);
 
     onMount(async () => {
         userId = localStorage.getItem("userId");
@@ -24,6 +28,7 @@
         if (!data.success) { goto("/questions"); return; }
         question = data.data;
         bestCommentUuid = question.bestCommentUuid;
+        loading = false;
 
         if (sessionUuid) {
             const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -54,11 +59,12 @@
     }
 </script>
 <svelte:head>
-	<title>{question ? question.title + " | 質問 | Schoolink" : "質問 | Schoolink"}</title>
+    <title>{question ? question.title + " | 質問 | Schoolink" : "読み込み中… | 質問 | Schoolink"}</title>
 </svelte:head>
 
-
-{#if question}
+{#if loading}
+    <SkeletonDetail />
+{:else if question}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/questions">＜ 質問</a>
     <h1 class="text-3xl font-bold mt-8">{question.title}</h1>
@@ -88,7 +94,7 @@
         {#if question.userId === userId}
         <div class="flex items-center gap-3">
             <a class="button-violet" href="/questions/{question.questionId}/edit">編集</a>
-            <button class="button-red" onclick={removeQuestion}>削除</button>
+            <button class="button-red" onclick={() => showDeleteDialog = true}>削除</button>
         </div>
         {/if}
     </div>
@@ -102,3 +108,11 @@
     />
 </div>
 {/if}
+
+<ConfirmDialog
+    open={showDeleteDialog}
+    title="質問を削除"
+    message="「{question?.title}」を削除しますか？この操作は取り消せません。"
+    onConfirm={removeQuestion}
+    onCancel={() => showDeleteDialog = false}
+/>

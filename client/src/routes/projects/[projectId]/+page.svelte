@@ -6,12 +6,17 @@
     import type { ProjectType } from "../../../lib/types";
     import SubscribeButton from "../../../lib/components/SubscribeButton.svelte";
     import CommentSection from "../../../lib/components/CommentSection.svelte";
+    import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
+    import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
 
     const projectId = $page.params.projectId;
 
     let project = $state<ProjectType>();
     let userId = $state<string | null>(null);
     let organizationId = $state<string>('');
+    let loading = $state(true);
+    // 削除確認ダイアログ
+    let showDeleteDialog = $state(false);
 
     onMount(async () => {
         userId = localStorage.getItem("userId");
@@ -20,6 +25,7 @@
         const data = await response.json();
         if (!data.success) { goto("/"); return; }
         project = data.data;
+        loading = false;
 
         if (sessionUuid) {
             const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -39,11 +45,14 @@
     };
 </script>
 <svelte:head>
-	<title>{project ? project.title + " | プロジェクト | Schoolink" : "プロジェクト | Schoolink"}</title>
+    <!-- 修正11: データ取得前もタイトルに意味のある情報を持たせる -->
+    <title>{project ? project.title + " | プロジェクト | Schoolink" : "読み込み中… | プロジェクト | Schoolink"}</title>
 </svelte:head>
 
-
-{#if project}
+<!-- 修正5: ローディング中はスケルトンを表示 -->
+{#if loading}
+    <SkeletonDetail />
+{:else if project}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/projects">＜ プロジェクト</a>
     <h1 class="text-3xl font-bold text-center mt-8">{project.title}</h1>
@@ -79,7 +88,8 @@
         {#if project.userId === userId}
         <div class="flex items-center gap-3">
             <a class="button-violet" href="/projects/{project.projectId}/edit">編集</a>
-            <button class="button-red" onclick={removeProject}>削除</button>
+            <!-- 修正1: 削除ボタンはダイアログを開く -->
+            <button class="button-red" onclick={() => showDeleteDialog = true}>削除</button>
         </div>
         {/if}
     </div>
@@ -87,3 +97,12 @@
     <CommentSection postUuid={project.postUuid} {organizationId} />
 </div>
 {/if}
+
+<!-- 修正1: 削除確認ダイアログ -->
+<ConfirmDialog
+    open={showDeleteDialog}
+    title="プロジェクトを削除"
+    message="「{project?.title}」を削除しますか？この操作は取り消せません。"
+    onConfirm={removeProject}
+    onCancel={() => showDeleteDialog = false}
+/>

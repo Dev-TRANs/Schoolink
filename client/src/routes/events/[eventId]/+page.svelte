@@ -6,12 +6,16 @@
     import type { EventType } from "../../../lib/types";
     import SubscribeButton from "../../../lib/components/SubscribeButton.svelte";
     import CommentSection from "../../../lib/components/CommentSection.svelte";
+    import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
+    import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
 
     const eventId = $page.params.eventId;
 
     let event = $state<EventType>();
     let userId = $state<string | null>(null);
     let organizationId = $state<string>('');
+    let loading = $state(true);
+    let showDeleteDialog = $state(false);
 
     onMount(async () => {
         userId = localStorage.getItem("userId");
@@ -20,6 +24,7 @@
         const data = await response.json();
         if (!data.success) { goto("/"); return; }
         event = data.data;
+        loading = false;
 
         if (sessionUuid) {
             const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
@@ -39,11 +44,12 @@
     };
 </script>
 <svelte:head>
-	<title>{event ? event.title + " | イベント | Schoolink" : "イベント | Schoolink"}</title>
+    <title>{event ? event.title + " | イベント | Schoolink" : "読み込み中… | イベント | Schoolink"}</title>
 </svelte:head>
 
-
-{#if event}
+{#if loading}
+    <SkeletonDetail />
+{:else if event}
 <div class="w-full flex items-center flex-col max-w-2xl mx-auto px-5 pb-20">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/events">＜ イベント</a>
     <h1 class="text-3xl font-bold text-center mt-8">{event.title}</h1>
@@ -85,7 +91,7 @@
         {#if event.userId === userId}
         <div class="flex items-center gap-3">
             <a class="button-violet" href="/events/{event.eventId}/edit">編集</a>
-            <button class="button-red" onclick={removeEvent}>削除</button>
+            <button class="button-red" onclick={() => showDeleteDialog = true}>削除</button>
         </div>
         {/if}
     </div>
@@ -93,3 +99,11 @@
     <CommentSection postUuid={event.postUuid} {organizationId} />
 </div>
 {/if}
+
+<ConfirmDialog
+    open={showDeleteDialog}
+    title="イベントを削除"
+    message="「{event?.title}」を削除しますか？この操作は取り消せません。"
+    onConfirm={removeEvent}
+    onCancel={() => showDeleteDialog = false}
+/>
