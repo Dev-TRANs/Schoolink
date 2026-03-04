@@ -1,21 +1,21 @@
 <svelte:head>
-	<title>投票 | Schoolink</title>
+	<title>質問 | Schoolink</title>
 </svelte:head>
 
 <script lang="ts">
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
-    import type { PollType } from "../../lib/types";
+    import type { QuestionType } from "../../lib/types";
    
-    let items = $state<PollType[]>([]);
-    let filtered = $state<PollType[]>([]);
+    let items = $state<QuestionType[]>([]);
+    let filtered = $state<QuestionType[]>([]);
     let searchQuery = $state<string>('');
-    let fuse: Fuse<PollType>;
+    let fuse: Fuse<QuestionType>;
     let loading = $state(true);
    
     onMount(async () => {
-        const response = await fetch(`${PUBLIC_API_URL}/polls`);
+        const response = await fetch(`${PUBLIC_API_URL}/questions`);
         const data = await response.json();
         items = data.data;
         filtered = items;
@@ -42,10 +42,10 @@
     <p class="text-normal">
         <a href="/about" class="underline text-sky-600">つながる学生のためのプラットフォーム、Schoolinkを知る→</a>
     </p>
-    <h1 class="mt-3 text-4xl font-bold">投票</h1>
+    <h1 class="mt-3 text-4xl font-bold">質問</h1>
     <input
         class="bg-gray-200 h-10 w-full mt-4 rounded-xl p-4"
-        placeholder="投票を検索…"
+        placeholder="質問を検索…"
         type="search"
         value={searchQuery}
         oninput={handleSearch}
@@ -67,28 +67,31 @@
     {:else}
     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6">
         {#if !searchQuery}
-        <a href="/polls/create">
+        <a href="/questions/create">
             <div class="text-sky-600 flex items-center justify-center text-6xl aspect-4/3 rounded-xl bg-gray-200">＋</div>
             <p class="text-xl w-full text-center mt-2">新規作成</p>
         </a>
         {/if}
 
-        {#each filtered as item}
-        <a href="/polls/{item.pollId}">
+        {#each filtered as question}
+        <a href="/questions/{question.questionId}">
             <div>
                 <img
                     class="aspect-4/3 rounded-xl bg-gray-200 border border-gray-500 object-cover w-full"
-                    src={item.thumbnail}
+                    src={question.thumbnail}
                     alt="thumbnail"
                     loading="lazy"
                 />
-                <p class="text-xl w-full text-left mt-2 truncate">{item.title}</p>
+                <p class="text-xl w-full text-left mt-2 truncate">{question.title}</p>
+                {#if question.bestCommentUuid}
+                    <span class="inline-block text-xs bg-green-100 text-green-700 rounded-full px-2 py-0.5 mt-1">ベストアンサーあり</span>
+                {/if}
                 <div class="flex items-center gap-1 mt-2">
-                    <img src={item.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" loading="lazy"/>
-                    <p class="text-sm">{item.userDisplayName}</p>
+                    <img src={question.userAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" loading="lazy"/>
+                    <p class="text-sm">{question.userDisplayName}</p>
                     <p class="text-gray-500 text-sm">in</p>
-                    <img src={item.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" loading="lazy"/>
-                    <p class="text-sm truncate">{item.organizationDisplayName}</p>
+                    <img src={question.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" loading="lazy"/>
+                    <p class="text-sm truncate">{question.organizationDisplayName}</p>
                 </div>
             </div>
         </a>
