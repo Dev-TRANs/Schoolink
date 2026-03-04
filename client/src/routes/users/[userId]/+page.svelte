@@ -16,8 +16,10 @@
     let polls = $state<PollType[]>([])
 
     let questions = $state<QuestionType[]>([])
+    let currentUserId = $state<string | null>(null)
 
     onMount(async() => {
+        currentUserId = localStorage.getItem("userId");
         const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
         const data = await response.json();
         user = data.data;
@@ -77,6 +79,11 @@
         </div>
         {#if user.bio}
         <div class="col-span-full whitespace-pre-line text-gray-700 text-center sm:text-left">{user.bio}</div>
+        {/if}
+        {#if currentUserId === userId}
+        <div class="col-span-full">
+            <a class="button-violet" href="/settings/user/profile">プロフィールを編集</a>
+        </div>
         {/if}
     </div>
 

@@ -6,6 +6,7 @@
     import type { OrganizationType } from "../../../lib/types";
 
     let organization = $state<OrganizationType>();
+    let currentUserRole = $state<string | null>(null);
 
     const organizationId = $page.params.organizationId;
 
@@ -13,6 +14,12 @@
         const response = await fetch(`${PUBLIC_API_URL}/organizations/${organizationId}`);
         const data = await response.json();
         organization = data.data;
+
+        const currentUserId = localStorage.getItem("userId");
+        if (currentUserId && organization) {
+            const found = organization.users.find(u => u.userId === currentUserId);
+            currentUserRole = found?.role ?? null;
+        }
     })
 </script>
 <svelte:head>
@@ -23,7 +30,7 @@
 {#if organization}
 <div class="w-full flex flex-col items-center px-5 sm:px-10 py-8 space-y-10">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl items-center">
-        <img class="rounded-full border border-gray-500 aspect-square w-32 h-32 mx-auto sm:mx-0" src={organization.avatar} alt="avatar" loading="lazy"/>
+        <img class="rounded-3xl border border-gray-500 aspect-square w-32 h-32 mx-auto sm:mx-0" src={organization.avatar} alt="avatar" loading="lazy"/>
         <div class="sm:col-span-2 flex flex-col justify-center space-y-2 text-center sm:text-left">
             <p class="text-3xl font-bold">{organization.displayName}</p>
             <p class="text-gray-500 text-md">ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{organization.organizationId}</span></p>
@@ -50,16 +57,12 @@
         {#if organization.bio}
         <div class="col-span-full whitespace-pre-line text-gray-700 text-center sm:text-left">{organization.bio}</div>
         {/if}
+        {#if currentUserRole === "admin"}
+        <div class="col-span-full">
+            <a class="button-violet" href="/settings/organization/profile">プロフィールを編集</a>
+        </div>
+        {/if}
     </div>
-    {#if organization.profileBook}
-    <div class="w-full max-w-3xl">
-        <h2 class="text-2xl font-bold text-center mb-4">プロフィール帳</h2>
-        <a href={organization.profileBook} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 justify-center border border-sky-400 text-sky-600 hover:bg-sky-50 transition rounded-lg px-6 py-3 w-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
-            プロフィール帳を見る (PDF)
-        </a>
-    </div>
-    {/if}
     <div class="w-full max-w-3xl">
         <h2 class="text-2xl font-bold text-center mb-4">ユーザー</h2>
         <div class="space-y-4">

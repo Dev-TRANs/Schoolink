@@ -54,43 +54,6 @@
     onMount(loadOrganization);
 
 
-    // プロフィール帳アップロード
-    let profileBookLoading = false;
-    let profileBookError = '';
-    let profileBookSuccess = false;
-
-    async function handleProfileBookUpload(e: Event) {
-        const input = e.target as HTMLInputElement;
-        if (!input.files || input.files.length === 0) return;
-        const file = input.files[0];
-        if (file.type !== 'application/pdf') {
-            profileBookError = 'PDFファイルを選択してください。';
-            return;
-        }
-        profileBookLoading = true;
-        profileBookError = '';
-        profileBookSuccess = false;
-        try {
-            const formData = new FormData();
-            formData.set('sessionUuid', sessionUuid);
-            formData.set('profileBook', file);
-            const response = await fetch(`${PUBLIC_API_URL}/organizations/${organization.organizationId}/profile_book`, {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            if (result.success) {
-                profileBookSuccess = true;
-            } else {
-                profileBookError = result.message || 'アップロードに失敗しました。';
-            }
-        } catch (error) {
-            console.error('Profile book upload error:', error);
-            profileBookError = 'サーバーとの通信中にエラーが発生しました。';
-        } finally {
-            profileBookLoading = false;
-        }
-    }
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
@@ -114,6 +77,8 @@
         const result = await response.json();
         if (result.success !== true) {
           errorMessage = result.message || '送信に失敗しました。';
+        } else {
+          goto(`/organizations/${organization.organizationId}`);
         }
       } catch (error) {
         console.error('Login error:', error);
@@ -143,32 +108,6 @@
       />
     </div>
 
-    <p class="w-full text-center text-2xl underline mt-5">プロフィール帳</p>
-    <div class="w-full mt-3 mb-2">
-        {#if organization.profileBook}
-        <div class="mb-3">
-            <p class="text-sm text-gray-500 mb-1">現在のプロフィール帳:</p>
-            <a href={organization.profileBook} target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:underline text-sm">PDFを開く →</a>
-        </div>
-        {/if}
-        <label class="block text-sm font-medium text-gray-700 mb-1">PDFをアップロード</label>
-        <input
-            type="file"
-            accept="application/pdf"
-            on:change={handleProfileBookUpload}
-            disabled={profileBookLoading}
-            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-sky-50 file:text-sky-600 hover:file:bg-sky-100 disabled:opacity-50"
-        />
-        {#if profileBookLoading}
-        <p class="text-sm text-gray-500 mt-2">アップロード中...</p>
-        {/if}
-        {#if profileBookSuccess}
-        <p class="text-sm text-green-600 mt-2">アップロードが完了しました。</p>
-        {/if}
-        {#if profileBookError}
-        <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md mt-2 text-sm">{profileBookError}</div>
-        {/if}
-    </div>
     <p class="w-full text-center text-2xl underline mt-5">プロフィール変更</p>
     <form on:submit|preventDefault={handleSubmit} class="mt-5 w-full" bind:this={formElement}>
       <FormInputField

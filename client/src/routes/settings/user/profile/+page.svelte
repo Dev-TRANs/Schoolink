@@ -72,6 +72,8 @@
         const result = await response.json();
         if (result.success !== true) {
           errorMessage = result.message || '送信に失敗しました。';
+        } else {
+          goto(`/users/${user.userId}`);
         }
       } catch (error) {
         console.error('Login error:', error);
