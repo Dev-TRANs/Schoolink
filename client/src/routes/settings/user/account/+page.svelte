@@ -9,8 +9,10 @@
 
   import FormInputField from "../../../../lib/components/FormInputField.svelte";
 
-  let userId = '';
-  let sessionUuid = '';
+  import { sessionManager } from "../../../../lib/stores/session.svelte";
+
+  let userId = $derived(sessionManager.userId || '');
+  let sessionUuid = $derived(sessionManager.sessionUuid || '');
 
   let currentPassword = '';
   let newPassword = '';
@@ -95,8 +97,7 @@
       if (result.success !== true)  {
         idFormErrorMessage = result.message || '送信に失敗しました。';
       } else {
-          localStorage.setItem("userId", newUserId);
-          userId = newUserId; // ローカル変数も更新
+          sessionManager.setSession(sessionUuid, newUserId);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -107,9 +108,7 @@
   }
   
   onMount(async () => {
-      sessionUuid = localStorage.getItem("sessionUuid");
-      userId = localStorage.getItem("userId");
-      if(!sessionUuid){
+      if(!sessionManager.sessionUuid){
           goto('/signin');
       }
   });

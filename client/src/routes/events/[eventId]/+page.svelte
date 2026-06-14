@@ -8,33 +8,27 @@
     import CommentSection from "../../../lib/components/CommentSection.svelte";
     import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
     import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
+    import { sessionManager } from "../../../lib/stores/session.svelte";
 
     const eventId = $page.params.eventId;
 
     let event = $state<EventType>();
-    let userId = $state<string | null>(null);
-    let organizationId = $state<string>('');
+    let userId = $derived(sessionManager.userId);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? '');
     let loading = $state(true);
     let showDeleteDialog = $state(false);
 
     onMount(async () => {
-        userId = localStorage.getItem("userId");
-        const sessionUuid = localStorage.getItem("sessionUuid");
         const response = await fetch(`${PUBLIC_API_URL}/events/${eventId}`);
         const data = await response.json();
         if (!data.success) { goto("/"); return; }
         event = data.data;
         loading = false;
-
-        if (sessionUuid) {
-            const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-            const userData = await userRes.json();
-            organizationId = userData.data?.organizationId ?? '';
-        }
     });
 
     const removeEvent = async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid");
+        const sessionUuid = sessionManager.sessionUuid;
+        if (!sessionUuid) return;
         await fetch(`${PUBLIC_API_URL}/events/${eventId}/is_valid`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },

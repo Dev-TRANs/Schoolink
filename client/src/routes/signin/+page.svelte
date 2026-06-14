@@ -6,6 +6,7 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { sessionManager } from '../../lib/stores/session.svelte';
 
     import FormInputField from "../../lib/components/FormInputField.svelte";
   
@@ -44,8 +45,7 @@
         });
         const result = await response.json();
         if (result.success === true) {
-          localStorage.setItem('sessionUuid', result.sessionUuid);
-          localStorage.setItem('userId', result.userId);
+          sessionManager.setSession(result.sessionUuid, result.userId);
           goto('/settings');
         } else {
           errorMessage = result.message || 'ログインに失敗しました。';
@@ -59,8 +59,7 @@
     }
     
     onMount(async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        if(sessionUuid){
+        if(sessionManager.sessionUuid){
             goto('/settings')
         }
     });

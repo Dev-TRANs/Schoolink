@@ -9,45 +9,16 @@
 
     import FormInputField from "../../../../lib/components/FormInputField.svelte";
     import ImgField from "../../../../lib/components/ImgField.svelte"
-    import type { UserType } from "../../../../lib/types";
+    import { sessionManager } from "../../../../lib/stores/session.svelte";
 
-    let sessionUuid = ""
+    let sessionUuid = $derived(sessionManager.sessionUuid || "");
+    let user = $derived(sessionManager.user);
 
     onMount(async () => {
-        sessionUuid = localStorage.getItem("sessionUuid")
-        if(!sessionUuid){
+        if(!sessionManager.sessionUuid){
             goto('/signin')
         }
     });
-
-    let user: UserType = undefined
-
-    async function loadUser() {
-        sessionUuid = localStorage.getItem("sessionUuid")
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            const sessionResponse = await fetch(`${PUBLIC_API_URL}/auth/session_check`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-            },
-                body: JSON.stringify({
-                    sessionUuid,
-                    userId
-                })
-            })
-            const sessionData = await sessionResponse.json();
-            if(sessionData.isValid) {
-                const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-                const data = await response.json();
-                user = data.data;
-            }
-        } else {
-            user = undefined
-        }
-    } 
-    
-    onMount(loadUser);
 
     let formElement: HTMLFormElement;
     let data: FormData;
@@ -73,6 +44,8 @@
         if (result.success !== true) {
           errorMessage = result.message || '送信に失敗しました。';
         } else {
+          // プロフィール更新後、sessionManager の user ステートを再取得して画面と同期
+          await sessionManager.checkSession(PUBLIC_API_URL);
           goto(`/users/${user.userId}`);
         }
       } catch (error) {

@@ -8,33 +8,25 @@
     import CommentSection from "../../../lib/components/CommentSection.svelte";
     import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
     import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
+    import { sessionManager } from "../../../lib/stores/session.svelte";
 
     const questionId = $page.params.questionId;
 
     let question = $state<QuestionType>();
-    let userId = $state<string | null>(null);
-    let sessionUuid = $state<string | null>(null);
-    let organizationId = $state<string>('');
+    let userId = $derived(sessionManager.userId);
+    let sessionUuid = $derived(sessionManager.sessionUuid);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? '');
     let bestCommentUuid = $state<string | null>(null);
     let loading = $state(true);
     let showDeleteDialog = $state(false);
 
     onMount(async () => {
-        userId = localStorage.getItem("userId");
-        sessionUuid = localStorage.getItem("sessionUuid");
-
         const response = await fetch(`${PUBLIC_API_URL}/questions/${questionId}`);
         const data = await response.json();
         if (!data.success) { goto("/questions"); return; }
         question = data.data;
         bestCommentUuid = question.bestCommentUuid;
         loading = false;
-
-        if (sessionUuid) {
-            const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-            const userData = await userRes.json();
-            organizationId = userData.data?.organizationId ?? '';
-        }
     });
 
     async function setBestComment(commentUuid: string) {

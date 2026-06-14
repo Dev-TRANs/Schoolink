@@ -6,34 +6,18 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
-    import type { UserType } from "../../lib/types";
+    import { sessionManager } from "../../lib/stores/session.svelte";
 
-    let user = $state<UserType>();
+    let user = $derived(sessionManager.user);
 
     onMount(async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        if(!sessionUuid){
+        if(!sessionManager.sessionUuid){
             goto('/signin')
         }
-        const userId = localStorage.getItem("userId")
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        user = data.data;
     });
 
     const signOut = async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        localStorage.removeItem("sessionUuid")
-        localStorage.removeItem("userId")
-        await fetch(`${PUBLIC_API_URL}/auth/sign_out`, {
-            method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                    sessionUuid,
-            })
-        })
+        await sessionManager.signOut(PUBLIC_API_URL);
         goto('/')
     }
 </script>

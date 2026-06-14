@@ -8,34 +8,28 @@
     import CommentSection from "../../../lib/components/CommentSection.svelte";
     import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
     import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
+    import { sessionManager } from "../../../lib/stores/session.svelte";
 
     const projectId = $page.params.projectId;
 
     let project = $state<ProjectType>();
-    let userId = $state<string | null>(null);
-    let organizationId = $state<string>('');
+    let userId = $derived(sessionManager.userId);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? '');
     let loading = $state(true);
     // 削除確認ダイアログ
     let showDeleteDialog = $state(false);
 
     onMount(async () => {
-        userId = localStorage.getItem("userId");
-        const sessionUuid = localStorage.getItem("sessionUuid");
         const response = await fetch(`${PUBLIC_API_URL}/projects/${projectId}`);
         const data = await response.json();
         if (!data.success) { goto("/"); return; }
         project = data.data;
         loading = false;
-
-        if (sessionUuid) {
-            const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-            const userData = await userRes.json();
-            organizationId = userData.data?.organizationId ?? '';
-        }
     });
 
     const removeProject = async () => {
-        const sessionUuid = localStorage.getItem("sessionUuid");
+        const sessionUuid = sessionManager.sessionUuid;
+        if (!sessionUuid) return;
         await fetch(`${PUBLIC_API_URL}/projects/${projectId}/is_valid`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },

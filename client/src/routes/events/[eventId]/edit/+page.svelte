@@ -7,23 +7,28 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
-    import type { EventType } from "../../../../lib/types"
+    import type { EventType } from "../../../../lib/types";
+    import { sessionManager } from "../../../../lib/stores/session.svelte";
 
     const eventId = $page.params.eventId;
 
     let event: EventType;
-
-    let userId;
+    let userId = $derived(sessionManager.userId);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? "");
 
     onMount(async () => {
-        userId = localStorage.getItem("userId")
+        if (!sessionManager.sessionUuid) {
+            goto('/signin');
+            return;
+        }
         const response = await fetch(`${PUBLIC_API_URL}/events/${eventId}`);
         const eventData = await response.json();
-        if(!eventData){
-            goto("/")   
+        if(!eventData || !eventData.data){
+            goto("/")
+            return;
         }
         event = eventData.data
-        if(event.userId !== userId){
+        if(event.userId !== sessionManager.userId){
             goto('/events/' + event.eventId)
         }
     });
@@ -33,7 +38,6 @@
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
-    let organizationId = "";
     
     async function handleSubmit(e) {
       formSubmitted = true;
@@ -42,7 +46,7 @@
       
       try {
         data = new FormData(formElement);
-        data.set("sessionUuid", localStorage.getItem("sessionUuid"));
+        data.set("sessionUuid", sessionManager.sessionUuid || "");
         data.set("organizationId", organizationId);
         
         const thumbnail = data.get("thumbnail") as File;
@@ -68,18 +72,6 @@
         loading = false;
       }
     }
-    
-    onMount(async () => {
-      const sessionUuid = localStorage.getItem("sessionUuid");
-      if(!sessionUuid){
-        goto('/signin');
-      } else {
-        const userId = localStorage.getItem("userId");
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        organizationId = data.data.organizationId;
-      }
-    });
   </script>
 <svelte:head>
 	<title>{event ? event.title + " | イベントを編集 | Schoolink" : "イベントを編集 | Schoolink"}</title>

@@ -6,6 +6,7 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
+    import { sessionManager } from "../../lib/stores/session.svelte";
     import {
         notifications,
         unreadCount,
@@ -15,7 +16,7 @@
     } from "../../lib/stores/notifications";
 
     onMount(async () => {
-        if (!localStorage.getItem("sessionUuid")) {
+        if (!sessionManager.sessionUuid) {
             goto("/signin");
             return;
         }

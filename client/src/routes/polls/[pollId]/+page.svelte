@@ -9,33 +9,26 @@
     import CommentSection from "../../../lib/components/CommentSection.svelte";
     import ConfirmDialog from "../../../lib/components/ConfirmDialog.svelte";
     import SkeletonDetail from "../../../lib/components/SkeletonDetail.svelte";
+    import { sessionManager } from "../../../lib/stores/session.svelte";
 
     const pollId = get(page).params.pollId;
 
     let poll = $state<PollType | null>(null);
-    let userIds: { sessionUuid: string | null; clientUuid: string | null };
     let selectedChoice = $state<string | null>(null);
-    let userId = $state<string | null>(null);
-    let organizationId = $state<string>('');
+    let userId = $derived(sessionManager.userId);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? '');
     let loading = $state(true);
     let showDeleteDialog = $state(false);
 
+    let userIds = $derived({
+        sessionUuid: sessionManager.sessionUuid,
+        clientUuid: typeof window !== 'undefined' ? localStorage.getItem("clientUuid") : null
+    });
+
     onMount(async () => {
-        userId = localStorage.getItem("userId");
-        const sessionUuid = localStorage.getItem("sessionUuid");
-        userIds = {
-            sessionUuid,
-            clientUuid: localStorage.getItem("clientUuid")
-        };
         await loadPollData();
         await loadUserVote();
         loading = false;
-
-        if (sessionUuid) {
-            const userRes = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-            const userData = await userRes.json();
-            organizationId = userData.data?.organizationId ?? '';
-        }
     });
 
     async function loadPollData() {
@@ -72,7 +65,8 @@
     }
 
     async function removePoll() {
-        const sessionUuid = localStorage.getItem("sessionUuid");
+        const sessionUuid = sessionManager.sessionUuid;
+        if (!sessionUuid) return;
         await fetch(`${PUBLIC_API_URL}/polls/${pollId}/is_valid`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },

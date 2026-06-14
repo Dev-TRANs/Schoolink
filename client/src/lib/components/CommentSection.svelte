@@ -2,6 +2,7 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import type { CommentType, ReplyType } from "../types";
+    import { sessionManager } from "../stores/session.svelte";
 
     // props
     export let postUuid: string;
@@ -10,9 +11,6 @@
     export let enableBestAnswer: boolean = false;
     export let bestCommentUuid: string | null = null;
     export let onBestCommentSet: ((commentUuid: string) => void) | null = null;
-
-    let sessionUuid: string | null = null;
-    let userId: string | null = null;
 
     let comments: CommentType[] = [];
     let commentContent = '';
@@ -23,9 +21,10 @@
     let openReplies: Record<string, boolean> = {};
     let repliesMap: Record<string, ReplyType[]> = {};
 
+    $: sessionUuid = sessionManager.sessionUuid;
+    $: userId = sessionManager.userId;
+
     onMount(async () => {
-        sessionUuid = localStorage.getItem("sessionUuid");
-        userId = localStorage.getItem("userId");
         await loadComments();
     });
 

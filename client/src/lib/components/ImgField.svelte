@@ -1,4 +1,5 @@
 <script>
+  import { sessionManager } from "../stores/session.svelte";
   export let id = "";
   export let name = "";
   export let label = "";
@@ -162,7 +163,7 @@
     if (!uploadUrl) return Promise.reject("Upload URL not specified");
     if (!blob) return Promise.reject("No image blob to upload");
     
-    const sessionUuid = localStorage.getItem("sessionUuid")
+    const sessionUuid = sessionManager.sessionUuid;
     
     isUploading = true;
     

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
+    import { sessionManager } from "../stores/session.svelte";
 
     export let postType: "project" | "event" | "poll" | "question";
     export let postId: string;
@@ -9,10 +10,10 @@
 
     let subscribed = false;
     let loading = false;
-    let sessionUuid: string | null = null;
+
+    $: sessionUuid = sessionManager.sessionUuid;
 
     onMount(async () => {
-        sessionUuid = localStorage.getItem("sessionUuid");
         if (!sessionUuid || !postUuid) return;
         try {
             const res = await fetch(`${PUBLIC_API_URL}/notifications/subscriptions/query`, {

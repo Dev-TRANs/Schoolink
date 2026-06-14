@@ -7,23 +7,28 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import type { ProjectType } from '../../../../lib/types';
+    import { sessionManager } from "../../../../lib/stores/session.svelte";
 
     const projectId = $page.params.projectId;
 
     let project: ProjectType;
-
-    let userId;
+    let userId = $derived(sessionManager.userId);
+    let organizationId = $derived(sessionManager.user?.organizationId ?? "");
 
     onMount(async () => {
-        userId = localStorage.getItem("userId")
+        if (!sessionManager.sessionUuid) {
+            goto('/signin');
+            return;
+        }
         const response = await fetch(`${PUBLIC_API_URL}/projects/${projectId}`);
         const projectData = await response.json();
-        if(!projectData){
-            goto("/")   
+        if (!projectData || !projectData.data) {
+            goto("/");
+            return;
         }
-        project = projectData.data
-        if(project.userId !== userId){
-            goto('/projects/' + project.projectId)
+        project = projectData.data;
+        if (project.userId !== sessionManager.userId) {
+            goto('/projects/' + project.projectId);
         }
     });
 
@@ -32,7 +37,6 @@
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
-    let organizationId = "";
     
     async function handleSubmit(e) {
       formSubmitted = true;
@@ -41,7 +45,7 @@
       
       try {
         data = new FormData(formElement);
-        data.set("sessionUuid", localStorage.getItem("sessionUuid"));
+        data.set("sessionUuid", sessionManager.sessionUuid || "");
         data.set("organizationId", organizationId);
         
         const thumbnail = data.get("thumbnail") as File;
@@ -67,18 +71,6 @@
         loading = false;
       }
     }
-    
-    onMount(async () => {
-      const sessionUuid = localStorage.getItem("sessionUuid");
-      if(!sessionUuid){
-        goto('/signin');
-      } else {
-        const userId = localStorage.getItem("userId");
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        organizationId = data.data.organizationId;
-      }
-    });
   </script>
 <svelte:head>
 	<title>{project ? project.title + " | プロジェクトを編集 | Schoolink" : "プロジェクトを編集 | Schoolink"}</title>

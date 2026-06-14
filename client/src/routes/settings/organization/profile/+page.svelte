@@ -10,48 +10,27 @@
     import FormInputField from "../../../../lib/components/FormInputField.svelte";
     import ImgField from "../../../../lib/components/ImgField.svelte"
     import type { UserType, OrganizationType } from "../../../../lib/types";
+    import { sessionManager } from "../../../../lib/stores/session.svelte";
 
-    let sessionUuid = ""
-
-    onMount(async () => {
-        sessionUuid = localStorage.getItem("sessionUuid")
-        if(!sessionUuid){
-            goto('/signin')
-        }
-    });
-
-    let organization: OrganizationType
+    let sessionUuid = $derived(sessionManager.sessionUuid || "");
+    let organization: OrganizationType = $state();
 
     async function loadOrganization() {
-        sessionUuid = localStorage.getItem("sessionUuid")
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            const sessionResponse = await fetch(`${PUBLIC_API_URL}/auth/session_check`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-            },
-                body: JSON.stringify({
-                    sessionUuid,
-                    userId
-                })
-            })
-            const sessionData = await sessionResponse.json();
-            let user: UserType
-            if(sessionData.isValid) {
-                const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-                const data = await response.json();
-                user = data.data as UserType;
-                const orgResponcse = await fetch(`${PUBLIC_API_URL}/organizations/${user.organizationId}`)
-                const orgData = await orgResponcse.json()
-                organization = orgData.data as OrganizationType;
-            }
-        } else {
-            organization = undefined
+        const user = sessionManager.user;
+        if (user && user.organizationId) {
+            const orgResponse = await fetch(`${PUBLIC_API_URL}/organizations/${user.organizationId}`)
+            const orgData = await orgResponse.json()
+            organization = orgData.data as OrganizationType;
         }
     } 
     
-    onMount(loadOrganization);
+    onMount(async () => {
+        if(!sessionManager.sessionUuid){
+            goto('/signin')
+            return;
+        }
+        await loadOrganization();
+    });
 
 
     // プロフィール帳アップロード

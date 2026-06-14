@@ -4,46 +4,21 @@
     import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
     import { page } from '$app/state';
-    import type { UserType } from '../lib/types';
     import { notifications, unreadCount, fetchNotifications, startPolling, stopPolling } from '../lib/stores/notifications';
+    import { sessionManager } from '../lib/stores/session.svelte';
 
 	let { children } = $props();
 
-    let user = $state<UserType>();
-
     async function loadUser() {
-        const sessionUuid = localStorage.getItem("sessionUuid")
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-            const sessionResponse = await fetch(`${PUBLIC_API_URL}/auth/session_check`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sessionUuid, userId })
-            });
-            const sessionData = await sessionResponse.json();
-            if (sessionData.isValid) {
-                const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-                const data = await response.json();
-                user = data.data;
-                fetchNotifications(PUBLIC_API_URL);
-                startPolling(PUBLIC_API_URL, 30000);
-            } else {
-                localStorage.removeItem("sessionUuid");
-                localStorage.removeItem("userId");
-                await fetch(`${PUBLIC_API_URL}/auth/sign_out`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sessionUuid })
-                });
-                user = undefined;
-                notifications.set([]);
-                stopPolling();
-            }
+        const isValid = await sessionManager.checkSession(PUBLIC_API_URL);
+        if (isValid) {
+            fetchNotifications(PUBLIC_API_URL);
+            startPolling(PUBLIC_API_URL, 30000);
         } else {
-            user = undefined;
             notifications.set([]);
+            stopPolling();
         }
-        if (!user && !localStorage.getItem("clientUuid"))
+        if (!sessionManager.user && typeof window !== 'undefined' && !localStorage.getItem("clientUuid"))
             localStorage.setItem("clientUuid", crypto.randomUUID());
     }
 
@@ -60,7 +35,7 @@
         <!-- 修正: アンカーをアイコンの外に出してテキスト表示バグを解消 -->
         <a href="/settings" class="absolute right-6">
             <span class="!text-3xl material-symbols-outlined text-blue-600">
-                { user ? "settings" : "login" }
+                { sessionManager.user ? "settings" : "login" }
             </span>
         </a>
     </div>
@@ -96,7 +71,7 @@
                 質問
             </div>
         </a>
-        {#if user}
+        {#if sessionManager.user}
         <!-- 通知（ログイン時のみ）: PCはリスト右端にバッジのみ -->
         <a href="/notifications">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/notifications') ? 'bg-gray-300' : ''}">
@@ -110,30 +85,30 @@
         {/if}
         <a href="/settings">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/settings') ? 'bg-gray-300' : ''}">
-    	        <span class="material-symbols-outlined mr-1 text-blue-600">{ user ? "settings" : "login" }</span>
-                { user ? "設定" : "ログイン" }
+    	        <span class="material-symbols-outlined mr-1 text-blue-600">{ sessionManager.user ? "settings" : "login" }</span>
+                { sessionManager.user ? "設定" : "ログイン" }
             </div>
         </a>
-        {#if user}
+        {#if sessionManager.user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <a href="/users/{user.userId}">
-                <img src={user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
+            <a href="/users/{sessionManager.user.userId}">
+                <img src={sessionManager.user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
             </a>
-            <a href="/users/{user.userId}">
-                <p class="text-sm hover:underline">{user.displayName}</p>
+            <a href="/users/{sessionManager.user.userId}">
+                <p class="text-sm hover:underline">{sessionManager.user.displayName}</p>
             </a>
             <p class="text-gray-500 text-sm">in</p>
         </div>
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
-            <a href="/organizations/{user.organizationId}">
-                <img src={user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
+            <a href="/organizations/{sessionManager.user.organizationId}">
+                <img src={sessionManager.user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
             </a>
-            <a href="/organizations/{user.organizationId}">
-                <p class="text-sm truncate hover:underline">{user.organizationDisplayName}</p>
+            <a href="/organizations/{sessionManager.user.organizationId}">
+                <p class="text-sm truncate hover:underline">{sessionManager.user.organizationDisplayName}</p>
             </a>
         </div>
         {/if}
-        {#if user && user.role === "admin"}
+        {#if sessionManager.user && sessionManager.user.role === "admin"}
         <a href="/admin">
             <div class="text-lg mt-1 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/admin') ? 'bg-gray-300' : ''}">
                 <span class="material-symbols-outlined mr-1 text-blue-600">supervisor_account</span>
@@ -176,7 +151,7 @@
 		    </div>
         </a>
         <!-- 通知アイコンにバッジのみ表示（テキスト横にはなし） -->
-        <a href={user ? '/notifications' : '/signin'}>
+        <a href={sessionManager.user ? '/notifications' : '/signin'}>
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/notifications') ? 'text-blue-600' : ''}">
                 <span class="relative">
 			        <span class="material-symbols-outlined text-{page.url.pathname.includes('/notifications') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">notifications</span>

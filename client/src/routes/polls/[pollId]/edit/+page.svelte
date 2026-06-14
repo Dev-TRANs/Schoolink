@@ -7,11 +7,12 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import type { PollType } from '../../../../lib/types';
+    import { sessionManager } from "../../../../lib/stores/session.svelte";
   
     const pollId = $page.params.pollId;
   
     let poll: PollType;
-    let userId: string;
+    let userId = $derived(sessionManager.userId);
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
@@ -19,8 +20,7 @@
     let formSubmitted = false;
   
     onMount(async () => {
-      userId = localStorage.getItem("userId");
-      const sessionUuid = localStorage.getItem("sessionUuid");
+      const sessionUuid = sessionManager.sessionUuid;
       if (!sessionUuid) {
         goto('/signin');
         return;
@@ -36,7 +36,7 @@
   
       poll = pollData.data;
   
-      if (poll.userId !== userId) {
+      if (poll.userId !== sessionManager.userId) {
         goto('/polls/' + poll.pollId);
       }
     });
@@ -48,7 +48,7 @@
   
       try {
         data = new FormData(formElement);
-        data.set("sessionUuid", localStorage.getItem("sessionUuid") || "");
+        data.set("sessionUuid", sessionManager.sessionUuid || "");
   
         // 画像が未選択（既存画像のまま）の場合削除
         const thumbnail = data.get("thumbnail") as File;

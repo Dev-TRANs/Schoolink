@@ -1,4 +1,5 @@
 import { writable, derived } from 'svelte/store';
+import { sessionManager } from './session.svelte';
 
 export type NotificationType = {
     notificationUuid: string;
@@ -20,7 +21,7 @@ export const unreadCount = derived(
 
 // 通知を取得してストアに格納
 export async function fetchNotifications(apiUrl: string) {
-    const sessionUuid = localStorage.getItem('sessionUuid');
+    const sessionUuid = sessionManager.sessionUuid;
     if (!sessionUuid) {
         notifications.set([]);
         return;
@@ -44,7 +45,7 @@ export async function fetchNotifications(apiUrl: string) {
 
 // 通知を既読にしてストアも更新
 export async function markAsOpened(apiUrl: string, notificationUuid: string) {
-    const sessionUuid = localStorage.getItem('sessionUuid');
+    const sessionUuid = sessionManager.sessionUuid;
     if (!sessionUuid) return;
     try {
         await fetch(`${apiUrl}/notifications/${notificationUuid}/is_opened`, {
@@ -64,7 +65,7 @@ export async function markAsOpened(apiUrl: string, notificationUuid: string) {
 
 // 全通知を既読にする
 export async function markAllAsOpened(apiUrl: string) {
-    const sessionUuid = localStorage.getItem('sessionUuid');
+    const sessionUuid = sessionManager.sessionUuid;
     if (!sessionUuid) return;
     let current: NotificationType[] = [];
     const unsub = notifications.subscribe(v => { current = v; });
@@ -81,7 +82,7 @@ export function startPolling(apiUrl: string, intervalMs = 30000) {
     _pollingApiUrl = apiUrl;
     stopPolling();
     _pollingTimer = setInterval(() => {
-        if (localStorage.getItem('sessionUuid')) {
+        if (sessionManager.sessionUuid) {
             fetchNotifications(_pollingApiUrl);
         } else {
             stopPolling();
@@ -103,7 +104,7 @@ export function stopPolling() {
 }
 
 function _onVisible() {
-    if (document.visibilityState === 'visible' && localStorage.getItem('sessionUuid')) {
+    if (document.visibilityState === 'visible' && sessionManager.sessionUuid) {
         fetchNotifications(_pollingApiUrl);
     }
 }

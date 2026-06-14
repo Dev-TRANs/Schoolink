@@ -9,13 +9,14 @@
     import { goto } from "$app/navigation";
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
+    import { sessionManager } from "../../../lib/stores/session.svelte";
     
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
-    let organizationId = "";
+    let organizationId = $derived(sessionManager.user?.organizationId ?? "");
     
     async function handleSubmit(e) {
       formSubmitted = true;
@@ -24,7 +25,7 @@
       
       try {
         data = new FormData(formElement);
-        data.set("sessionUuid", localStorage.getItem("sessionUuid"));
+        data.set("sessionUuid", sessionManager.sessionUuid || "");
         data.set("organizationId", organizationId);
         
         const thumbnail = data.get("thumbnail") as File;
@@ -52,14 +53,8 @@
     }
     
     onMount(async () => {
-      const sessionUuid = localStorage.getItem("sessionUuid");
-      if(!sessionUuid){
+      if(!sessionManager.sessionUuid){
         goto('/signin');
-      } else {
-        const userId = localStorage.getItem("userId");
-        const response = await fetch(`${PUBLIC_API_URL}/users/${userId}`);
-        const data = await response.json();
-        organizationId = data.data.organizationId;
       }
     });
   </script>
