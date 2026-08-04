@@ -37,27 +37,27 @@
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
-    
-    async function handleSubmit(e) {
+
+    async function handleSubmit() {
       formSubmitted = true;
       loading = true;
       errorMessage = '';
-      
+
       try {
         data = new FormData(formElement);
         data.set("sessionUuid", sessionManager.sessionUuid || "");
         data.set("organizationId", organizationId);
-        
+
         const thumbnail = data.get("thumbnail") as File;
         if (!thumbnail.size) {
           data.delete("thumbnail");
         }
-        
+
         const response = await fetch(`${PUBLIC_API_URL}/projects/${project.projectId}`, {
           method: 'PATCH',
           body: data
         });
-        
+
         const result = await response.json();
         if (result.success === true) {
           goto('/projects/' + project.projectId);
@@ -76,7 +76,7 @@
 	<title>{project ? project.title + " | プロジェクトを編集 | Schoolink" : "プロジェクトを編集 | Schoolink"}</title>
 </svelte:head>
 
-  
+
   {#if project}
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/projects/{project.projectId}">＜ 閲覧画面</a>

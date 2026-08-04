@@ -58,7 +58,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6 animate-pulse">
         {#each [1,2,3,4,5,6] as _}
         <div>
-            <div class="aspect-[4/3] rounded-xl bg-gray-200"></div>
+            <div class="aspect-4/3 rounded-xl bg-gray-200"></div>
             <div class="h-5 bg-gray-200 rounded mt-2 w-3/4"></div>
             <div class="h-4 bg-gray-200 rounded mt-2 w-1/2"></div>
         </div>

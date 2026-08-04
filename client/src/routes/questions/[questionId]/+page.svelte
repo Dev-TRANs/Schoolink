@@ -25,7 +25,7 @@
         const data = await response.json();
         if (!data.success) { goto("/questions"); return; }
         question = data.data;
-        bestCommentUuid = question.bestCommentUuid;
+        bestCommentUuid = question?.bestCommentUuid || null;
         loading = false;
     });
 

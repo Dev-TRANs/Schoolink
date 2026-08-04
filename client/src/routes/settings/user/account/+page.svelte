@@ -22,7 +22,7 @@
 
   async function handlePasswordFormSubmit() {
     passwordFormSubmitted = true;
-    
+
     if (!userId || !currentPassword || !newPassword) {
       passwordFormErrorMessage = 'すべての項目を入力してください。';
       return;

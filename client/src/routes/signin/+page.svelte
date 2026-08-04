@@ -9,23 +9,23 @@
     import { sessionManager } from '../../lib/stores/session.svelte';
 
     import FormInputField from "../../lib/components/FormInputField.svelte";
-  
+
     let userId = '';
     let password = '';
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
-  
+
     async function handleSubmit() {
       formSubmitted = true;
-      
+
       if (!userId || !password) {
         return;
       }
-  
+
       loading = true;
       errorMessage = '';
-  
+
       try {
         const encoder = new TextEncoder();
         const data = encoder.encode(password);
@@ -57,7 +57,7 @@
         loading = false;
       }
     }
-    
+
     onMount(async () => {
         if(sessionManager.sessionUuid){
             goto('/settings')

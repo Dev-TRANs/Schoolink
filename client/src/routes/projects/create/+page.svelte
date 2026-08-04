@@ -10,34 +10,34 @@
     import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import { sessionManager } from "../../../lib/stores/session.svelte";
-    
+
     let formElement: HTMLFormElement;
     let data: FormData;
     let loading = false;
     let errorMessage = '';
     let formSubmitted = false;
     let organizationId = $derived(sessionManager.user?.organizationId ?? "");
-    
+
     async function handleSubmit(e) {
       formSubmitted = true;
       loading = true;
       errorMessage = '';
-      
+
       try {
         data = new FormData(formElement);
         data.set("sessionUuid", sessionManager.sessionUuid || "");
         data.set("organizationId", organizationId);
-        
+
         const thumbnail = data.get("thumbnail") as File;
         if (!thumbnail.size) {
           data.delete("thumbnail");
         }
-        
+
         const response = await fetch(`${PUBLIC_API_URL}/projects`, {
           method: 'POST',
           body: data
         });
-        
+
         const result = await response.json();
         if (result.success === true) {
           goto('/projects/' + result.projectId);
@@ -51,14 +51,14 @@
         loading = false;
       }
     }
-    
+
     onMount(async () => {
       if(!sessionManager.sessionUuid){
         goto('/signin');
       }
     });
   </script>
-  
+
   <div class="w-full flex items-center flex-col max-w-lg mx-auto px-5">
     <a class="text-lg text-sky-600 text-left w-full hover:underline" href="/projects">＜ プロジェクト</a>
     <h1 class="text-3xl font-bold text-cente mt-8">新規作成</h1>

@@ -68,7 +68,7 @@
     </div>
     {/if}
 
-    <div class="w-full border border-2 border-slate-300 mt-5 rounded-2xl p-5">
+    <div class="w-full border-2 border-slate-300 mt-5 rounded-2xl p-5">
         <p><span class="font-bold">開始日時</span>: {new Date(event.startAt * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
         <p class="mt-2"><span class="font-bold">終了日時</span>: {new Date(event.endAt * 1000).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}</p>
         <p class="mt-2"><span class="font-bold">場所</span>: {event.place}</p>

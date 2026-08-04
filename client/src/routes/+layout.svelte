@@ -10,7 +10,7 @@
 	let { children } = $props();
 
     async function loadUser() {
-        const isValid = await sessionManager.checkSession(PUBLIC_API_URL);
+        const isValid = await sessionManager.checkSession();
         if (isValid) {
             fetchNotifications(PUBLIC_API_URL);
             startPolling(PUBLIC_API_URL, 30000);
@@ -34,7 +34,7 @@
         </a>
         <!-- 修正: アンカーをアイコンの外に出してテキスト表示バグを解消 -->
         <a href="/settings" class="absolute right-6">
-            <span class="!text-3xl material-symbols-outlined text-blue-600">
+            <span class="text-3xl! material-symbols-outlined text-blue-600">
                 { sessionManager.user ? "settings" : "login" }
             </span>
         </a>
@@ -45,7 +45,7 @@
     <!-- デスクトップサイドバー -->
     <div class="w-full bg-gray-200 hidden sm:block">
         <a href="/">
-            <p class="text-3xl text-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
+            <p class="text-2xl font-bold pl-5 mt-5 font-AllertaStencil">Schoolink<span class="ml-2 text-xl text-gray-500 font-normal">β</span></p>
         </a>
         <a href="/projects">
             <div class="text-lg mt-5 flex items-center mr-4 pl-5 py-2 rounded-r-xl {page.url.pathname.includes('/projects') ? 'bg-gray-300' : ''}">
@@ -92,7 +92,7 @@
         {#if sessionManager.user}
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
             <a href="/users/{sessionManager.user.userId}">
-                <img src={sessionManager.user.avatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-full aspect-square" loading="lazy"/>
+                <img src={sessionManager.user.avatar} alt="avatar" class="size-7 border border-gray-500 rounded-full aspect-square" loading="lazy"/>
             </a>
             <a href="/users/{sessionManager.user.userId}">
                 <p class="text-sm hover:underline">{sessionManager.user.displayName}</p>
@@ -101,7 +101,7 @@
         </div>
         <div class="flex items-center gap-1 mt-2 mr-4 pl-8">
             <a href="/organizations/{sessionManager.user.organizationId}">
-                <img src={sessionManager.user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 border-1 rounded-md aspect-square" loading="lazy"/>
+                <img src={sessionManager.user.organizationAvatar} alt="avatar" class="size-7 border border-gray-500 rounded-md aspect-square" loading="lazy"/>
             </a>
             <a href="/organizations/{sessionManager.user.organizationId}">
                 <p class="text-sm truncate hover:underline">{sessionManager.user.organizationDisplayName}</p>
@@ -128,25 +128,25 @@
     <div class="grid grid-cols-5 w-full text-gray-600 font-bold">
         <a href="/projects">
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/projects') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/projects') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">public</span>
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/projects') ? 'blue' : 'gray'}-600 mb-1 text-2xl!">public</span>
 			    プロジェクト
 		    </div>
         </a>
         <a href="/events">
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/events') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/events') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">event</span>
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/events') ? 'blue' : 'gray'}-600 mb-1 text-2xl!">event</span>
 			    イベント
 		    </div>
         </a>
         <a href="/polls">
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/polls') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/polls') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">quiz</span>
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/polls') ? 'blue' : 'gray'}-600 mb-1 text-2xl!">quiz</span>
 			    投票
 		    </div>
         </a>
         <a href="/questions">
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/questions') ? 'text-blue-600' : ''}">
-			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/questions') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">live_help</span>
+			    <span class="material-symbols-outlined text-{page.url.pathname.includes('/questions') ? 'blue' : 'gray'}-600 mb-1 text-2xl!">live_help</span>
 			    質問
 		    </div>
         </a>
@@ -154,9 +154,9 @@
         <a href={sessionManager.user ? '/notifications' : '/signin'}>
 		    <div class="text-xs flex flex-col items-center py-2 {page.url.pathname.includes('/notifications') ? 'text-blue-600' : ''}">
                 <span class="relative">
-			        <span class="material-symbols-outlined text-{page.url.pathname.includes('/notifications') ? 'blue' : 'gray'}-600 mb-1 !text-2xl">notifications</span>
+			        <span class="material-symbols-outlined text-{page.url.pathname.includes('/notifications') ? 'blue' : 'gray'}-600 mb-1 text-2xl!">notifications</span>
                     {#if $unreadCount > 0}
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5">
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-3.5 h-3.5 flex items-center justify-center px-0.5">
                         {$unreadCount > 9 ? '9+' : $unreadCount}
                     </span>
                     {/if}

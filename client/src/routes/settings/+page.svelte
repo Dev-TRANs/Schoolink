@@ -4,7 +4,6 @@
 
 <script lang="ts">
     import { goto } from "$app/navigation";
-    import { PUBLIC_API_URL } from "$env/static/public";
     import { onMount } from "svelte";
     import { sessionManager } from "../../lib/stores/session.svelte";
 
@@ -17,7 +16,7 @@
     });
 
     const signOut = async () => {
-        await sessionManager.signOut(PUBLIC_API_URL);
+        await sessionManager.signOut();
         goto('/')
     }
 </script>
@@ -33,7 +32,7 @@
                 <p class="text-md text-gray-500">ID: <span class="bg-gray-100 px-2 py-0.5 rounded">{user.userId}</span></p>
             </a>
             <p class="text-md text-gray-500">
-                所属: 
+                所属:
                 <a class="hover:underline text-black" href="/organizations/{user.organizationId}">
                     {user.organizationDisplayName}
                 </a>

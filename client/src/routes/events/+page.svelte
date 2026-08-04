@@ -7,13 +7,13 @@
     import { onMount } from "svelte";
     import Fuse from 'fuse.js';
     import type { EventType } from "../../lib/types";
-   
+
     let items = $state<EventType[]>([]);
     let filtered = $state<EventType[]>([]);
     let searchQuery = $state<string>('');
     let fuse: Fuse<EventType>;
     let loading = $state(true);
-   
+
     onMount(async () => {
         const response = await fetch(`${PUBLIC_API_URL}/events`);
         const data = await response.json();
@@ -26,7 +26,7 @@
         });
         loading = false;
     });
-   
+
     function handleSearch(event: Event) {
         const target = event.target as HTMLInputElement;
         searchQuery = target.value;
@@ -37,7 +37,7 @@
         }
     }
 </script>
-   
+
 <div class="mx-5">
     <p class="text-normal">
         <a href="/about" class="underline text-sky-600">つながる学生のためのプラットフォーム、Schoolinkを知る→</a>
@@ -58,7 +58,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-5 gap-6 animate-pulse">
         {#each [1,2,3,4,5,6] as _}
         <div>
-            <div class="aspect-[4/3] rounded-xl bg-gray-200"></div>
+            <div class="aspect-4/3 rounded-xl bg-gray-200"></div>
             <div class="h-5 bg-gray-200 rounded mt-2 w-3/4"></div>
             <div class="h-4 bg-gray-200 rounded mt-2 w-1/2"></div>
         </div>

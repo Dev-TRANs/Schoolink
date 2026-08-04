@@ -103,7 +103,7 @@
     </div>
 
     {#if poll.thumbnail}
-        <img src={poll.thumbnail} class="rounded-2xl mt-5 w-full aspect-[4/3]" alt="thumbnail" loading="lazy"/>
+        <img src={poll.thumbnail} class="rounded-2xl mt-5 w-full aspect-4/3" alt="thumbnail" loading="lazy"/>
     {/if}
 
     {#if poll.description}

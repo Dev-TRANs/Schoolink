@@ -26,7 +26,7 @@
     let errorMessage = '';
     let formSubmitted = false;
     
-    async function handleSubmit(e) {
+    async function handleSubmit() {
       formSubmitted = true;
       loading = true;
       errorMessage = '';
@@ -34,19 +34,19 @@
       try {
         data = new FormData(formElement);
         data.set("sessionUuid", sessionUuid);
-        
-        const response = await fetch(`${PUBLIC_API_URL}/users/${user.userId}`, {
+
+        const response = await fetch(`${PUBLIC_API_URL}/users/${user!.userId}`, {
           method: 'PATCH',
           body: data
         });
-        
+
         const result = await response.json();
         if (result.success !== true) {
           errorMessage = result.message || '送信に失敗しました。';
         } else {
           // プロフィール更新後、sessionManager の user ステートを再取得して画面と同期
-          await sessionManager.checkSession(PUBLIC_API_URL);
-          goto(`/users/${user.userId}`);
+          await sessionManager.checkSession();
+          goto(`/users/${user!.userId}`);
         }
       } catch (error) {
         console.error('Login error:', error);
